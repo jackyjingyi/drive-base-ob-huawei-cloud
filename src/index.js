@@ -1,32 +1,26 @@
-import React, {useCallback, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import ReactDOM from 'react-dom';
 import './index.css';
-import axios from "axios";
-import LeftSideNavbar from "./Navbar";
 import Banner from "./Banner"
-import {open} from "fs";
-import $ from 'jquery'
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import styled from "styled-components";
 import {useDropzone} from "react-dropzone";
+import {IconContext} from "react-icons";
+import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineArrowUp, AiOutlineUpload} from "react-icons/ai";
+import {MdOutlineCreateNewFolder} from "react-icons/md"
 
-var bucketName = 'dev-do-not-delete'//'oct-project-collection'
-var obsClient = new ObsClient({
-    access_key_id: "POC15HNEABZRTCXJXRR7",
-    secret_access_key: "koKUwzTk1KQD77FiAwrF6TfdyAqEqKIZKnlzlNJ7",
-    server: 'obs.cn-south-1.myhuaweicloud.com'
-});
+var bucketName = 'iri-drive-bucket' //'iri-drive-bucket'  //'dev-do-not-delete''oct-project-collection'
 
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 700,
-    height: 500,
+    width: '70%',
+    height: '60%',
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -89,7 +83,14 @@ function BasicModal(props) {
 
     return (
         <div>
-            <Button onClick={handleOpen}>上传</Button>
+            <Button className={`border`} onClick={handleOpen}>
+                <IconContext.Provider value={{size: '1.5em'}}>
+                    <div>
+                        <AiOutlineUpload/>
+                        <span>&nbsp;上传</span>
+                    </div>
+                </IconContext.Provider>
+            </Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -138,7 +139,7 @@ function InputModal(props) {
     const putDir = () => {
         // pud dir to obs
         let newKey = prefix.toString() + {directory: directory}.directory + "/"
-        obsClient.putObject({
+        props.obsClient.putObject({
             Bucket: bucketName,
             Key: newKey
         }, function (err, result) {
@@ -155,7 +156,14 @@ function InputModal(props) {
 
     return (
         <div>
-            <Button onClick={handleOpen}>新建文件夹</Button>
+            <Button className={`border`} onClick={handleOpen}>
+                <IconContext.Provider value={{size: '1.5em'}}>
+                    <div>
+                        <MdOutlineCreateNewFolder/>
+                        <span>&nbsp;新建文件夹</span>
+                    </div>
+                </IconContext.Provider>
+            </Button>
             <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title"
                    aria-describedby="modal-modal-description">
                 <Box sx={style}>
@@ -177,7 +185,84 @@ function InputModal(props) {
     )
 }
 
+const localStorage = window.localStorage
+
 // ========================================
+
+function LoginModal(props) {
+    const [open, setOpen] = useState(!props.isLogin);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const [isLogin, setLogin] = useState(props.isLogin);
+    const [ak, setAK] = useState(() => {
+        const saved = localStorage.getItem('ak')
+        return saved || ""
+    })
+    const [sk, setSK] = useState(() => {
+        const saved = localStorage.getItem('sk')
+        return saved || ""
+    })
+
+    function handleAk(e) {
+        setAK(e.target.value)
+    }
+
+
+    useEffect(() => {
+        localStorage.setItem("ak", ak)
+    })
+
+    useEffect(() => {
+        localStorage.setItem("sk", sk)
+    })
+
+    useEffect(() => {
+        localStorage.setItem('isLogin', isLogin)
+    })
+
+    function handleSK(e) {
+        setSK(e.target.value)
+    }
+
+    const handleLogin = () => {
+        setLogin(true)
+        props.userLogin(ak, sk)
+        handleClose()
+    }
+
+    function menuLogin() {
+
+        handleOpen()
+    }
+
+    return (
+        <div>
+            <Button onClick={menuLogin}>登录</Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
+                        请登录
+                    </Typography>
+                    <input aria-label={`ak`} className="form-control" value={ak} onChange={handleAk}/>
+                    <input aria-label={`sk`} className="form-control" value={sk} onChange={handleSK}/>
+                    <div id="modal-modal-description">
+                        <p><span>说明:</span></p>
+                        <p>- 基于集团安全要求: </p>
+                        <p>- 登录本云盘需求重新进行安全验证。</p>
+                        <p>- 请输入AK/SK</p>
+                    </div>
+                    <Button onClick={handleLogin}>确定</Button><Button onClick={handleClose}>取消</Button>
+
+                </Box>
+            </Modal>
+        </div>
+    );
+}
 
 class InfoPanel extends React.Component {
     constructor(props) {
@@ -185,12 +270,15 @@ class InfoPanel extends React.Component {
         this.state = {
             infoPanel: 'file',
             currentTasks: [],
-            finishedTasks: []
+            finishedTasks: [],
+            login: localStorage.getItem('isLogin') || false,
+            ak: localStorage.getItem('ak') || '',
+            sk: localStorage.getItem('sk') || '',
+            server: 'obs.cn-south-1.myhuaweicloud.com',
         }
     }
 
     handleMessage = (k, p, s, t, ta, ts) => {
-
         if (t === ta) {
             let _tty = [];
             let _con = false
@@ -254,21 +342,44 @@ class InfoPanel extends React.Component {
         this.setState({infoPanel: action})
     }
 
+    handleUserLogin = (ak, sk) => {
+        this.setState({
+            ak: ak,
+            sk: sk,
+            login: localStorage.getItem('isLogin') || false,
+        })
+    }
+
+    getObsClient() {
+        if (this.state.login) {
+            return new ObsClient({
+                access_key_id: this.state.ak,
+                secret_access_key: this.state.sk,
+                server: this.state.server,
+            })
+        }
+        return null
+
+    }
 
     render() {
-        const taskList = <TaskTable currentTasks={this.state.currentTasks} finishedTasks={this.state.finishedTasks}/>
-        const fileList = <FileTable bucketName={this.props.bucketName} taskMessage={this.handleMessage}/>
+        const taskList = <TaskTable currentTasks={this.state.currentTasks} finishedTasks={this.state.finishedTasks}
+                                    isLogin={this.state.login}/>
+        const fileList = <FileTable bucketName={this.props.bucketName} taskMessage={this.handleMessage}
+                                    isLogin={this.state.login} ak={this.state.ak} sk={this.state.sk}
+                                    obsClient={this.getObsClient()} server={this.state.server}
+        />
         return (
             <div className="container">
                 <Banner/>
                 <div className="row">
                     <div className="col-md-2">
                         <ul className="nav flex-column" role={`tablist`} id={`myTab`}>
-                            <li className="nav-item" role={`presentation`}>
+                            <li className="nav-item border" role={`presentation`}>
                                 <a key={1} className="nav-link" onClick={() => this.handleNavClick('file')}>文件管理
                                 </a>
                             </li>
-                            <li>
+                            <li className="nav-item border">
                                 <a key={2} className="nav-link" onClick={() => this.handleNavClick('task')}>任务管理
                                 </a>
                             </li>
@@ -278,6 +389,7 @@ class InfoPanel extends React.Component {
                         {this.state.infoPanel === 'file' ? fileList : taskList}
                     </div>
                 </div>
+                <div><LoginModal isLogin={this.state.login} userLogin={this.handleUserLogin}/></div>
             </div>
         )
     }
@@ -324,6 +436,7 @@ class TaskTable extends React.Component {
             tab: 1,
             _isRunningTab: 'active',
             _isFinishTab: '',
+            isLogin: this.props.isLogin
         }
         this.handleTabClick = this.handleTabClick.bind(this)
     }
@@ -437,7 +550,6 @@ class AddressComponent extends React.Component {
 
     render() {
         return (
-
             <input className="form-control" value={this.props.currentPrefix}
                    onChange={() => this.props.onChange()}/>
 
@@ -454,12 +566,11 @@ class TCell extends React.Component {
 
     render() {
         return (
-            <td onClick={this.props.onClick}>
+            <td>
                 {this.props.name}
             </td>
         )
     }
-
 }
 
 class Thead extends React.Component {
@@ -480,31 +591,107 @@ class Thead extends React.Component {
 
 
 class Row extends React.Component {
+    imageSupportList = [
+        'jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tiff'
+    ]
+
     constructor(props) {
         super(props);
+        this.state = {
+            imageUrl: '',
+            isImage: this.imageSupportList.includes(this.props.Key.split('.').pop()),
+        }
 
     }
 
-    render() {
+    componentDidMount() {
+        if (this.state.isImage) {
+            this.setState({
+                imageUrl: 'https://' + bucketName + '.' + this.props.server + '/' + this.props.Key + '?x-image-process=image/resize,m_lfit,h_55,w_55',
+            })
+        }
+    }
 
+    actionList() {
+        if (this.state.isImage) {
+            // is image call getImageUrl
+            return (
+                <div>
+                    <button onClick={this.props.onClick}>下载</button>
+                    <span>&nbsp;</span>
+                    <a className={`btn`}>查看</a>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <button onClick={this.props.onClick}>下载</button>
+                </div>
+            )
+        }
+    }
+
+    dateFormat() {
+        const date = this.props.LastModified
+        if (date instanceof Date) {
+            return date.Format("yyyy-MM-dd")
+        } else {
+            const newDate = new Date(date)
+            return newDate.Format("yyyy-MM-dd")
+        }
+    }
+
+    viewImage() {
+        if (this.state.isImage) {
+            return (
+                <img
+                    src={this.state.imageUrl}
+                    // alt={this.props.Key}
+                />
+            )
+        }
+    }
+
+    render() {
         return (
             <tr>
                 <td>
-                    {this.props.Key}
+                    <div>
+                        {this.viewImage()}
+                        <span className={`d-inline-block text-truncate`}>
+                            {this.props.currentKey}
+                        </span>
+                    </div>
                 </td>
                 <td>
-                    {this.props.LastModified}
+                    {this.dateFormat()}
                 </td>
                 <td>
                     {sizeHandler(this.props.Size)}
                 </td>
                 <td>
-                    <button>下载</button>
+                    {this.actionList()}
                 </td>
             </tr>
         )
     }
 
+}
+
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
 }
 
 class InfoLine extends React.Component {
@@ -539,23 +726,29 @@ class FileTable extends React.Component {
             ],
             stepNumber: 0,
             needRefresh: false,
-
+            isLogin: this.props.isLogin,
+            ak: this.props.ak,
+            sk: this.props.sk,
+            obsClient: this.props.obsClient,
+            server: this.props.server,
         }
         // todo => require from backend
-        this.obsClient = new ObsClient({
-            access_key_id: "POC15HNEABZRTCXJXRR7",
-            secret_access_key: "koKUwzTk1KQD77FiAwrF6TfdyAqEqKIZKnlzlNJ7",
-            server: 'obs.cn-south-1.myhuaweicloud.com'
-        });
+        // if (this.state.ak !== null && this.state.sk !== null) {
+        //     this.obsClient = new ObsClient({
+        //         access_key_id: this.state.ak,
+        //         secret_access_key: this.state.sk,
+        //         server: 'obs.cn-south-1.myhuaweicloud.com'
+        //     });
+        // }
         this.addressClickHandler = this.addressClickHandler.bind(this)
 
     }
 
-
     init() {
         // list all
         let table = this;
-        this.obsClient.listObjects({
+        console.log(this.state.obsClient)
+        this.state.obsClient.listObjects({
             Bucket: this.state.bucketName,
             MaxKeys: 1000,
             Delimiter: '/',
@@ -563,7 +756,7 @@ class FileTable extends React.Component {
             if (err) {
                 console.error('Error-->' + err);
             } else {
-                //console.log(result)
+                console.log(result)
                 if (result.CommonMsg.Status < 300 && result.InterfaceResult) {
                     table.setState({
                         contents: result.InterfaceResult.Contents,
@@ -576,18 +769,20 @@ class FileTable extends React.Component {
         })
     }
 
-    getObj(key) {
+    getObj(e, item) {
         let info = this
-        this.obsClient.getObject({
+        let signedUrl;
+        this.state.obsClient.getObject({
             Bucket: this.state.bucketName,
-            Key: key,
+            Key: this.state.currentPrefix + item.Key,
             SaveByType: 'file',
             ProgressCallback: function (transferredAmount, totalAmount, totalSeconds) {
                 info.props.taskMessage(
-                    prefix + files[0].path, files[0].path, files[0].size, transferredAmount, totalAmount, totalSeconds
+                    this.state.currentPrefix + item.Key, item.Key, item.Size, transferredAmount, totalAmount, totalSeconds
                 )
             }
         }, function (err, result) {
+            console.log(result)
             if (err) {
                 console.error('Error-->' + err);
             } else {
@@ -596,14 +791,29 @@ class FileTable extends React.Component {
                     // 获取下载对象的路径
                     console.log('Download Path:');
                     console.log(result.InterfaceResult.Content.SignedUrl);
+                    signedUrl = result.InterfaceResult.Content.SignedUrl
                 }
             }
         });
+        window.open(signedUrl)
+        // if (signedUrl){
+        //     axios({
+        //         url:signedUrl,
+        //         method:'GET',
+        //         responseType:'blob',
+        //         onDownloadProgress:(progressEvent)=>{
+        //             console.log(this.state.currentPrefix+item.Key,item.Key,item.Size,progressEvent.loaded, progressEvent.total,progressEvent.timeStamp)
+        //             info.props.taskMessage(
+        //                 this.state.currentPrefix+item.Key,item.Key,item.Size,progressEvent.loaded, progressEvent.total,progressEvent.timeStamp
+        //             )
+        //         }
+        //     })
+        // }
     }
 
     downwards(prefix) {
         let table = this
-        this.obsClient.listObjects({
+        this.state.obsClient.listObjects({
             Bucket: this.state.bucketName,
             MaxKeys: 1000,
             Prefix: prefix,
@@ -631,15 +841,81 @@ class FileTable extends React.Component {
         })
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props.isLogin) {
+            return {
+                isLogin: props.isLogin,
+                ak: props.ak,
+                sk: props.sk,
+                obsClient: props.obsClient
+            }
+
+        }
+        return null
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevState.ak !== this.state.ak && prevState.sk !== this.state.sk && this.state.obsClient !== null) {
+            console.log(this.state)
+            this.init()
+        }
+    }
+
     componentDidMount() {
-        this.init()
+        console.log("here", this.state)
+        if (this.state.isLogin) {
+            // let obs= new ObsClient({
+            //     access_key_id: this.state.ak,
+            //     secret_access_key: this.state.sk,
+            //     server: 'obs.cn-south-1.myhuaweicloud.com'
+            // });
+            //  this.setState({
+            //     obsClient:obs
+            // })
+            this.init()
+        }
     }
 
     upload(files, prefix) {
         var cp;
         var hook;
         let info = this
-        this.obsClient.uploadFile({
+
+        function reUpload() {
+            info.state.obsClient.uploadFile({
+                UploadCheckpoint: cp,
+                ProgressCallback: function (transferredAmount, totalAmount, totalSeconds) {
+                    // console.log(transferredAmount * 1.0 / totalSeconds / 1024);
+                    // console.log(transferredAmount * 100.0 / totalAmount);
+                    info.props.taskMessage(
+                        prefix + files[0].path, files[0].path, files[0].size, transferredAmount, totalAmount, totalSeconds
+                    )
+                },
+                EventCallback: function (eventType, eventParam, eventResult) {
+                    // 处理事件响应
+                },
+                ResumeCallback: function (resumeHook, uploadCheckpoint) {
+                    // 获取取消断点续传上传任务控制参数
+                    hook = resumeHook;
+                    // 记录断点
+                    cp = uploadCheckpoint;
+                }
+            }, function (err, result) {
+                if (err) {
+                    console.error('Error-->' + err);
+                    reUpload()
+                } else {
+                    if (result.CommonMsg.Status < 300) {
+                        info.handleFresh();
+                    } else {
+                        console.log('Code-->' + result.CommonMsg.Code);
+                        console.log('Message-->' + result.CommonMsg.Message);
+                    }
+                }
+            })
+        }
+
+        this.state.obsClient.uploadFile({
             Bucket: bucketName,
             Key: prefix + files[0].path,
             SourceFile: document.getElementById('obsupload').files[0],
@@ -668,36 +944,7 @@ class FileTable extends React.Component {
             console.error('Error-->' + err);
             // 出现错误，再次调用断点续传接口，继续上传任务
             if (err) {
-                obsClient.uploadFile({
-                    UploadCheckpoint: cp,
-                    ProgressCallback: function (transferredAmount, totalAmount, totalSeconds) {
-                        // console.log(transferredAmount * 1.0 / totalSeconds / 1024);
-                        // console.log(transferredAmount * 100.0 / totalAmount);
-                        info.props.taskMessage(
-                            prefix + files[0].path, files[0].path, files[0].size, transferredAmount, totalAmount, totalSeconds
-                        )
-                    },
-                    EventCallback: function (eventType, eventParam, eventResult) {
-                        // 处理事件响应
-                    },
-                }, function (err, result) {
-                    if (err) {
-                        console.error('Error-->' + err);
-                        info.handleFresh();
-                    } else {
-                        if (result.CommonMsg.Status < 300) {
-                            // console.log('RequestId-->' + result.InterfaceResult.RequestId);
-                            // console.log('Bucket-->' + result.InterfaceResult.Bucket);
-                            // console.log('Key-->' + result.InterfaceResult.Key);
-                            // console.log('Location-->' + result.InterfaceResult.Location);
-                            // todo info.refresh();
-                            info.handleFresh();
-                        } else {
-                            console.log('Code-->' + result.CommonMsg.Code);
-                            console.log('Message-->' + result.CommonMsg.Message);
-                        }
-                    }
-                });
+                reUpload()
             } else {
                 console.log('Status-->' + result.CommonMsg.Status);
                 if (result.CommonMsg.Status < 300 && result.InterfaceResult) {
@@ -718,8 +965,8 @@ class FileTable extends React.Component {
         if (this.state.needRefresh) {
             let table = this
             let prefix = this.state.currentPrefix
-            this.obsClient.listObjects({
-                Bucket: table.state.bucketName,
+            this.state.obsClient.listObjects({
+                Bucket: this.state.bucketName,
                 MaxKeys: 1000,
                 Prefix: prefix,
                 Delimiter: '/'
@@ -749,7 +996,7 @@ class FileTable extends React.Component {
         if (act === 1 && this.state.stepNumber > 0) {
             // back
             let table = this
-            this.obsClient.listObjects({
+            this.state.obsClient.listObjects({
                 Bucket: this.state.bucketName,
                 MaxKeys: 1000,
                 Prefix: table.state.history[table.state.stepNumber - 1].prefix,
@@ -773,12 +1020,13 @@ class FileTable extends React.Component {
             })
         } else if (act === 2 && this.state.stepNumber < this.state.history.length - 1) {
             let table = this
-            this.obsClient.listObjects({
+            this.state.obsClient.listObjects({
                 Bucket: this.state.bucketName,
                 MaxKeys: 1000,
                 Prefix: table.state.history[table.state.stepNumber + 1].prefix,
                 Delimiter: '/'
             }, function (err, result) {
+                console.log(result)
                 if (err) {
                     console.error('Error-->' + err);
                 } else {
@@ -803,7 +1051,7 @@ class FileTable extends React.Component {
             let p = prefix.slice(0, prefix.length - 1)
             p.push("")
 
-            this.obsClient.listObjects({
+            this.state.obsClient.listObjects({
                 Bucket: this.state.bucketName,
                 MaxKeys: 1000,
                 Prefix: p.join("/"),
@@ -844,15 +1092,23 @@ class FileTable extends React.Component {
         });
         const rows = this.state.contents.map((item, index) => {
 
-            let res = item.Key.includes(this.state.currentPrefix)
-            if (res && this.state.currentPrefix && item.Key !== this.state.currentPrefix) {
-                item.Key = item.Key.slice(this.state.currentPrefix.length,)
-                return <Row key={index} {...item}/>
-            } else if (item.Key === this.state.currentPrefix) {
+            const _item = Object.assign({}, item)
+            let res = _item.Key.includes(this.state.currentPrefix)
+            if (res && this.state.currentPrefix && _item.Key !== this.state.currentPrefix) {
+                _item.Key = item.Key
+                _item.currentKey = _item.Key.slice(this.state.currentPrefix.length,)
+                _item.server = this.state.server
+
+                return <Row key={index} {..._item} onClick={(e) => this.getObj(e, {..._item})}/>
+            } else if (_item.Key === this.state.currentPrefix) {
 
             } else {
+                _item.Key = item.Key
+                _item.currentKey = _item.Key.slice(this.state.currentPrefix.length,)
+                _item.server = this.state.server
                 return (
-                    <Row key={index} {...item}/>
+                    // 主目录下的obj this.state.currentPrefix is null
+                    <Row key={index} {..._item} onClick={(e) => this.getObj(e, {..._item})}/>
                 );
             }
 
@@ -861,38 +1117,66 @@ class FileTable extends React.Component {
         return (
             <div>
                 <div className="row margin-bottom-10">
-                    <div className="col-md-2">
-                        <a onClick={(e) => this.addressClickHandler(e, 1)} data-target='back'>back </a>
-                        <a onClick={(e) => this.addressClickHandler(e, 2)} data-target='forward'>forward </a>
-                        <a onClick={(e) => this.addressClickHandler(e, 3)} data-target='up'>up</a>
+                    <div className={`col-md-2 clearfix`}>
+                        <ul className={`list-group list-group-horizontal`}>
+                            <li className={`list-group-item`} style={{border: 'none'}}>
+                                <a onClick={(e) => this.addressClickHandler(e, 1)} data-target='back'>
+                                    <IconContext.Provider value={{size: '1.5em'}}>
+                                        <div>
+                                            <AiOutlineArrowLeft/>
+                                        </div>
+                                    </IconContext.Provider>
+                                </a>
+                            </li>
+                            <li className={`list-group-item`} style={{border: 'none'}}>
+                                <a onClick={(e) => this.addressClickHandler(e, 2)} data-target='forward'>
+                                    <IconContext.Provider value={{size: '1.5em'}}>
+                                        <div>
+                                            <AiOutlineArrowRight/>
+                                        </div>
+                                    </IconContext.Provider>
+                                </a>
+                            </li>
+                            <li className={`list-group-item`} style={{border: 'none'}}>
+                                <a onClick={(e) => this.addressClickHandler(e, 3)} data-target='up'>
+                                    <IconContext.Provider value={{size: '1.5em'}}>
+                                        <div>
+                                            <AiOutlineArrowUp/>
+                                        </div>
+                                    </IconContext.Provider>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <div className="col-md-10">
-                        <input className="form-control" value={this.state.currentPrefix} readOnly={true}
+                    <div className={`col-md-10 margin-top-5`}>
+                        <input className={`form-control fw-bold`} value={this.state.currentPrefix} readOnly={true}
                         />
                     </div>
                 </div>
                 <InfoLine key={2} currentObjectNumbers={3} currentLevelSize="9G"/>
                 <div key={3} className="row margin-bottom-10">
                     <ul className="list-group list-group-horizontal" style={{listStyle: "none", border: "none"}}>
-                        <li className="list-group-item" style={{listStyle: "none", border: "none"}}>
+                        <li className={`list-group-item`}
+                            style={{listStyle: "none", border: "none", padding: '0px 0px 0px 15px'}}>
                             <BasicModal prefix={this.state.currentPrefix} addTasks={this.addTasks}
                             />
                         </li>
-                        <li className="list-group-item" style={{listStyle: "none", border: "none"}}>
-                            <InputModal prefix={this.state.currentPrefix} onFresh={() => this.handleFresh()}/>
-                        </li>
-                        <li className="list-group-item" style={{listStyle: "none", border: "none"}}>
-                            <button key="3" className="btn btn-sm btn-primary">下载</button>
+                        <li className={`list-group-item`}
+                            style={{listStyle: "none", border: "none", padding: '0px 0px 0px 15px'}}>
+                            <InputModal prefix={this.state.currentPrefix} onFresh={() => this.handleFresh()}
+                                        obsClient={this.state.obsClient}/>
                         </li>
                     </ul>
                 </div>
 
-                <FileList header={this.state.header} dirs={dirs} rows={rows} />
+                <FileList header={this.state.header} dirs={dirs} rows={rows}/>
 
             </div>
         )
     }
+
 }
+
 
 
 class FileList extends React.Component {
@@ -913,6 +1197,7 @@ class FileList extends React.Component {
         )
     }
 }
+
 
 
 ReactDOM.render(
