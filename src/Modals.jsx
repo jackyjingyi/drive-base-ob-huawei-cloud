@@ -1,10 +1,13 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import styled from "styled-components";
 import {useDropzone} from "react-dropzone";
+import {IconContext} from "react-icons";
+import {AiOutlineUpload} from "react-icons/ai";
+import {MdOutlineCreateNewFolder} from "react-icons/md";
 
 const style = {
     position: 'absolute',
@@ -48,7 +51,10 @@ const Container = styled.div`
 `;
 
 
-function StyledDropzone(props) {
+function BasicModal(props) {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const {
         getRootProps,
         getInputProps,
@@ -63,29 +69,22 @@ function StyledDropzone(props) {
         </li>
     ));
 
-    return (
-        <div className="container">
-            <Container {...getRootProps({isFocused, isDragAccept, isDragReject})}>
-                <input id='obsupload' {...getInputProps()} />
-                <p>单击上传文件</p>
-            </Container>
-            <div>
-                <button onClick={(e) => upload(e, acceptedFiles)}>upload</button>
-            </div>
-            <ul>{files}</ul>
-        </div>
-
-    );
-}
-
-export default function BasicModal() {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    function uploadCallback() {
+        // upload(e, acceptedFiles, props.prefix);
+        props.addTasks(acceptedFiles, props.prefix)
+        handleClose();
+    }
 
     return (
         <div>
-            <Button onClick={handleOpen}>上传</Button>
+            <Button className={`border`} onClick={handleOpen}>
+                <IconContext.Provider value={{size: '1.5em'}}>
+                    <div>
+                        <AiOutlineUpload/>
+                        <span>&nbsp;上传</span>
+                    </div>
+                </IconContext.Provider>
+            </Button>
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -93,14 +92,165 @@ export default function BasicModal() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
                         上传对象
                     </Typography>
                     <Typography id="modal-modal-description" sx={{mt: 2}}>
-                        <StyledDropzone/>
                     </Typography>
+                    <div className="container">
+                        <Container {...getRootProps({isFocused, isDragAccept, isDragReject})}>
+                            <input id='obsupload' {...getInputProps()} />
+                            <span>单击上传文件</span>
+                        </Container>
+                        <div>
+                            <button onClick={uploadCallback}>upload</button>
+                        </div>
+                        <ul>{files}</ul>
+                    </div>
                 </Box>
             </Modal>
         </div>
     );
 }
+
+function InputModal(props) {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const namingRule = "\\:*?'<>|"
+    const [directory, setDirectory] = useState('')
+    const prefix = props.prefix
+
+    function handleDirectory(e) {
+        setDirectory(e.target.value)
+    }
+
+    function handleFresh() {
+        props.onFresh()
+    }
+
+    const putDir = () => {
+        // pud dir to obs
+        let newKey = prefix.toString() + {directory: directory}.directory + "/"
+        props.obsClient.putObject({
+            Bucket: bucketName,
+            Key: newKey
+        }, function (err, result) {
+            if (err) {
+                //console.error('Error-->' + err);
+            } else {
+                //console.log('Status-->' + result.CommonMsg.Status);
+                handleFresh();
+            }
+        });
+        handleClose();
+
+    }
+
+    return (
+        <div>
+            <Button className={`border`} onClick={handleOpen}>
+                <IconContext.Provider value={{size: '1.5em'}}>
+                    <div>
+                        <MdOutlineCreateNewFolder/>
+                        <span>&nbsp;新建文件夹</span>
+                    </div>
+                </IconContext.Provider>
+            </Button>
+            <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title"
+                   aria-describedby="modal-modal-description">
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
+                        新建文件夹
+                    </Typography>
+                    <input className="form-control" value={directory} onChange={handleDirectory}/>
+                    <div id="modal-modal-description">
+                        <p><span>命名规则:</span></p>
+                        <p>- 文件夹名称不能包含以下字符 :<span>{namingRule}</span>。 </p>
+                        <p>- 文件夹名称不能以英文句号（.）或斜杠（/）开头或结尾。</p>
+                        <p>- 文件夹的绝对路径总长度不能超过1023字符。</p>
+                        <p>- 单个斜杠（/）表示分隔并创建多层级的文件夹。</p>
+                    </div>
+                    <Button onClick={putDir}>确定</Button><Button onClick={handleClose}>取消</Button>
+                </Box>
+            </Modal>
+        </div>
+    )
+}
+
+function LoginModal(props) {
+    const [open, setOpen] = useState(!props.isLogin);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const [isLogin, setLogin] = useState(props.isLogin);
+    const [ak, setAK] = useState(() => {
+        const saved = localStorage.getItem('ak')
+        return saved || ""
+    })
+    const [sk, setSK] = useState(() => {
+        const saved = localStorage.getItem('sk')
+        return saved || ""
+    })
+
+    function handleAk(e) {
+        setAK(e.target.value)
+    }
+
+
+    useEffect(() => {
+        localStorage.setItem("ak", ak)
+    })
+
+    useEffect(() => {
+        localStorage.setItem("sk", sk)
+    })
+
+    useEffect(() => {
+        localStorage.setItem('isLogin', isLogin)
+    })
+
+    function handleSK(e) {
+        setSK(e.target.value)
+    }
+
+    const handleLogin = () => {
+        setLogin(true)
+        props.userLogin(ak, sk)
+        handleClose()
+    }
+
+    function menuLogin() {
+
+        handleOpen()
+    }
+
+    return (
+        <div>
+            <Button onClick={menuLogin}>登录</Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
+                        请登录
+                    </Typography>
+                    <input aria-label={`ak`} className="form-control" value={ak} onChange={handleAk}/>
+                    <input aria-label={`sk`} className="form-control" value={sk} onChange={handleSK}/>
+                    <div id="modal-modal-description">
+                        <p><span>说明:</span></p>
+                        <p>- 基于集团安全要求: </p>
+                        <p>- 登录本云盘需求重新进行安全验证。</p>
+                        <p>- 请输入AK/SK</p>
+                    </div>
+                    <Button onClick={handleLogin}>确定</Button><Button onClick={handleClose}>取消</Button>
+
+                </Box>
+            </Modal>
+        </div>
+    );
+}
+
+export {BasicModal, InputModal, LoginModal};

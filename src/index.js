@@ -2,267 +2,16 @@ import React, {useEffect, useState} from 'react'
 import ReactDOM from 'react-dom';
 import './index.css';
 import Banner from "./Banner"
-import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import styled from "styled-components";
-import {useDropzone} from "react-dropzone";
 import {IconContext} from "react-icons";
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineArrowUp, AiOutlineUpload} from "react-icons/ai";
-import {MdOutlineCreateNewFolder} from "react-icons/md"
+import {BasicModal, InputModal, LoginModal} from "./Modals";
+import {Row} from './s3objectList/s3objectComponent/Row';
 
 var bucketName = 'iri-drive-bucket' //'iri-drive-bucket'  //'dev-do-not-delete''oct-project-collection'
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '70%',
-    height: '60%',
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-};
-
-const getColor = (props) => {
-    if (props.isDragAccept) {
-        return '#00e676';
-    }
-    if (props.isDragReject) {
-        return '#ff1744';
-    }
-    if (props.isFocused) {
-        return '#2196f3';
-    }
-    return '#eeeeee';
-}
-
-const Container = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border-width: 2px;
-  border-radius: 2px;
-  border-color: ${props => getColor(props)};
-  border-style: dashed;
-  background-color: #fafafa;
-  color: #bdbdbd;
-  outline: none;
-  transition: border .24s ease-in-out;
-`;
-
-
-function BasicModal(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const {
-        getRootProps,
-        getInputProps,
-        isFocused,
-        isDragAccept,
-        isDragReject,
-        acceptedFiles,
-    } = useDropzone();
-    const files = acceptedFiles.map(file => (
-        <li key={file.path}>
-            {file.path} - {file.size} bytes
-        </li>
-    ));
-
-    function uploadCallback() {
-        // upload(e, acceptedFiles, props.prefix);
-        props.addTasks(acceptedFiles, props.prefix)
-        handleClose();
-    }
-
-    return (
-        <div>
-            <Button className={`border`} onClick={handleOpen}>
-                <IconContext.Provider value={{size: '1.5em'}}>
-                    <div>
-                        <AiOutlineUpload/>
-                        <span>&nbsp;上传</span>
-                    </div>
-                </IconContext.Provider>
-            </Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
-                        上传对象
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{mt: 2}}>
-                    </Typography>
-                    <div className="container">
-                        <Container {...getRootProps({isFocused, isDragAccept, isDragReject})}>
-                            <input id='obsupload' {...getInputProps()} />
-                            <span>单击上传文件</span>
-                        </Container>
-                        <div>
-                            <button onClick={uploadCallback}>upload</button>
-                        </div>
-                        <ul>{files}</ul>
-                    </div>
-                </Box>
-            </Modal>
-        </div>
-    );
-}
-
-
-function InputModal(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const namingRule = "\\:*?'<>|"
-    const [directory, setDirectory] = useState('')
-    const prefix = props.prefix
-
-    function handleDirectory(e) {
-        setDirectory(e.target.value)
-    }
-
-    function handleFresh() {
-        props.onFresh()
-    }
-
-    const putDir = () => {
-        // pud dir to obs
-        let newKey = prefix.toString() + {directory: directory}.directory + "/"
-        props.obsClient.putObject({
-            Bucket: bucketName,
-            Key: newKey
-        }, function (err, result) {
-            if (err) {
-                //console.error('Error-->' + err);
-            } else {
-                //console.log('Status-->' + result.CommonMsg.Status);
-                handleFresh();
-            }
-        });
-        handleClose();
-
-    }
-
-    return (
-        <div>
-            <Button className={`border`} onClick={handleOpen}>
-                <IconContext.Provider value={{size: '1.5em'}}>
-                    <div>
-                        <MdOutlineCreateNewFolder/>
-                        <span>&nbsp;新建文件夹</span>
-                    </div>
-                </IconContext.Provider>
-            </Button>
-            <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title"
-                   aria-describedby="modal-modal-description">
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
-                        新建文件夹
-                    </Typography>
-                    <input className="form-control" value={directory} onChange={handleDirectory}/>
-                    <div id="modal-modal-description">
-                        <p><span>命名规则:</span></p>
-                        <p>- 文件夹名称不能包含以下字符 :<span>{namingRule}</span>。 </p>
-                        <p>- 文件夹名称不能以英文句号（.）或斜杠（/）开头或结尾。</p>
-                        <p>- 文件夹的绝对路径总长度不能超过1023字符。</p>
-                        <p>- 单个斜杠（/）表示分隔并创建多层级的文件夹。</p>
-                    </div>
-                    <Button onClick={putDir}>确定</Button><Button onClick={handleClose}>取消</Button>
-                </Box>
-            </Modal>
-        </div>
-    )
-}
 
 const localStorage = window.localStorage
 
 // ========================================
-
-function LoginModal(props) {
-    const [open, setOpen] = useState(!props.isLogin);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const [isLogin, setLogin] = useState(props.isLogin);
-    const [ak, setAK] = useState(() => {
-        const saved = localStorage.getItem('ak')
-        return saved || ""
-    })
-    const [sk, setSK] = useState(() => {
-        const saved = localStorage.getItem('sk')
-        return saved || ""
-    })
-
-    function handleAk(e) {
-        setAK(e.target.value)
-    }
-
-
-    useEffect(() => {
-        localStorage.setItem("ak", ak)
-    })
-
-    useEffect(() => {
-        localStorage.setItem("sk", sk)
-    })
-
-    useEffect(() => {
-        localStorage.setItem('isLogin', isLogin)
-    })
-
-    function handleSK(e) {
-        setSK(e.target.value)
-    }
-
-    const handleLogin = () => {
-        setLogin(true)
-        props.userLogin(ak, sk)
-        handleClose()
-    }
-
-    function menuLogin() {
-
-        handleOpen()
-    }
-
-    return (
-        <div>
-            <Button onClick={menuLogin}>登录</Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
-                        请登录
-                    </Typography>
-                    <input aria-label={`ak`} className="form-control" value={ak} onChange={handleAk}/>
-                    <input aria-label={`sk`} className="form-control" value={sk} onChange={handleSK}/>
-                    <div id="modal-modal-description">
-                        <p><span>说明:</span></p>
-                        <p>- 基于集团安全要求: </p>
-                        <p>- 登录本云盘需求重新进行安全验证。</p>
-                        <p>- 请输入AK/SK</p>
-                    </div>
-                    <Button onClick={handleLogin}>确定</Button><Button onClick={handleClose}>取消</Button>
-
-                </Box>
-            </Modal>
-        </div>
-    );
-}
 
 class InfoPanel extends React.Component {
     constructor(props) {
@@ -394,7 +143,6 @@ class InfoPanel extends React.Component {
         )
     }
 }
-
 
 class Task extends React.Component {
 
@@ -542,7 +290,6 @@ class TaskTable extends React.Component {
 
 }
 
-
 class AddressComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -557,7 +304,6 @@ class AddressComponent extends React.Component {
     }
 
 }
-
 
 class TCell extends React.Component {
     constructor(props) {
@@ -587,95 +333,6 @@ class Thead extends React.Component {
         </tr>
         </thead>)
     }
-}
-
-
-class Row extends React.Component {
-    imageSupportList = [
-        'jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tiff'
-    ]
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            imageUrl: '',
-            isImage: this.imageSupportList.includes(this.props.Key.split('.').pop()),
-        }
-
-    }
-
-    componentDidMount() {
-        if (this.state.isImage) {
-            this.setState({
-                imageUrl: 'https://' + bucketName + '.' + this.props.server + '/' + this.props.Key + '?x-image-process=image/resize,m_lfit,h_55,w_55',
-            })
-        }
-    }
-
-    actionList() {
-        if (this.state.isImage) {
-            // is image call getImageUrl
-            return (
-                <div>
-                    <button onClick={this.props.onClick}>下载</button>
-                    <span>&nbsp;</span>
-                    <a className={`btn`}>查看</a>
-                </div>
-            )
-        } else {
-            return (
-                <div>
-                    <button onClick={this.props.onClick}>下载</button>
-                </div>
-            )
-        }
-    }
-
-    dateFormat() {
-        const date = this.props.LastModified
-        if (date instanceof Date) {
-            return date.Format("yyyy-MM-dd")
-        } else {
-            const newDate = new Date(date)
-            return newDate.Format("yyyy-MM-dd")
-        }
-    }
-
-    viewImage() {
-        if (this.state.isImage) {
-            return (
-                <img
-                    src={this.state.imageUrl}
-                    // alt={this.props.Key}
-                />
-            )
-        }
-    }
-
-    render() {
-        return (
-            <tr>
-                <td>
-                    <div>
-                        {this.viewImage()}
-                        <span className={`d-inline-block text-truncate`}>
-                            {this.props.currentKey}
-                        </span>
-                    </div>
-                </td>
-                <td>
-                    {this.dateFormat()}
-                </td>
-                <td>
-                    {sizeHandler(this.props.Size)}
-                </td>
-                <td>
-                    {this.actionList()}
-                </td>
-            </tr>
-        )
-    }
-
 }
 
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -796,19 +453,6 @@ class FileTable extends React.Component {
             }
         });
         window.open(signedUrl)
-        // if (signedUrl){
-        //     axios({
-        //         url:signedUrl,
-        //         method:'GET',
-        //         responseType:'blob',
-        //         onDownloadProgress:(progressEvent)=>{
-        //             console.log(this.state.currentPrefix+item.Key,item.Key,item.Size,progressEvent.loaded, progressEvent.total,progressEvent.timeStamp)
-        //             info.props.taskMessage(
-        //                 this.state.currentPrefix+item.Key,item.Key,item.Size,progressEvent.loaded, progressEvent.total,progressEvent.timeStamp
-        //             )
-        //         }
-        //     })
-        // }
     }
 
     downwards(prefix) {
@@ -1091,13 +735,13 @@ class FileTable extends React.Component {
             )
         });
         const rows = this.state.contents.map((item, index) => {
-
             const _item = Object.assign({}, item)
             let res = _item.Key.includes(this.state.currentPrefix)
             if (res && this.state.currentPrefix && _item.Key !== this.state.currentPrefix) {
                 _item.Key = item.Key
                 _item.currentKey = _item.Key.slice(this.state.currentPrefix.length,)
                 _item.server = this.state.server
+                _item.bucketName = this.state.bucketName
 
                 return <Row key={index} {..._item} onClick={(e) => this.getObj(e, {..._item})}/>
             } else if (_item.Key === this.state.currentPrefix) {
@@ -1106,14 +750,13 @@ class FileTable extends React.Component {
                 _item.Key = item.Key
                 _item.currentKey = _item.Key.slice(this.state.currentPrefix.length,)
                 _item.server = this.state.server
+                _item.bucketName = this.state.bucketName
                 return (
                     // 主目录下的obj this.state.currentPrefix is null
                     <Row key={index} {..._item} onClick={(e) => this.getObj(e, {..._item})}/>
                 );
             }
-
         })
-
         return (
             <div>
                 <div className="row margin-bottom-10">
@@ -1177,8 +820,6 @@ class FileTable extends React.Component {
 
 }
 
-
-
 class FileList extends React.Component {
     constructor(props) {
         super(props);
@@ -1197,7 +838,6 @@ class FileList extends React.Component {
         )
     }
 }
-
 
 
 ReactDOM.render(
