@@ -5,7 +5,10 @@ import Banner from "./Banner"
 import {IconContext} from "react-icons";
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineArrowUp, AiOutlineUpload} from "react-icons/ai";
 import {BasicModal, InputModal, LoginModal} from "./Modals";
-import {Row} from './s3objectList/s3objectComponent/Row';
+import {Row} from './s3objectList/s3objectComponent/row';
+import {FileList} from "./s3objectList/s3objectComponent/fileList";
+import {sizeHandler} from "./utils";
+import {DirectoryLine} from './s3directoryFuncs/directoryLine'
 
 var bucketName = 'iri-drive-bucket' //'iri-drive-bucket'  //'dev-do-not-delete''oct-project-collection'
 
@@ -161,19 +164,6 @@ class Task extends React.Component {
     }
 }
 
-function sizeHandler(s) {
-
-    if (s > 10 ** 9) {
-        return (s / 10.0 ** 9).toFixed(2).toString() + "GB"
-    } else if (s < 10 ** 9 && s > 10 ** 6) {
-        return (s / 10.0 ** 6).toFixed(2).toString() + "MB"
-    } else if (s < 10 ** 6 && s > 10 ** 3) {
-        return (s / 10.0 ** 3).toFixed(2).toString() + "KB"
-    } else {
-        return (s / 1.0).toFixed(2).toString() + "Bit"
-    }
-}
-
 class TaskTable extends React.Component {
 
     constructor(props) {
@@ -303,36 +293,6 @@ class AddressComponent extends React.Component {
         )
     }
 
-}
-
-class TCell extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <td>
-                {this.props.name}
-            </td>
-        )
-    }
-}
-
-class Thead extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (<thead>
-        <tr>
-            {this.props.header.map((item, index) =>
-                <TCell key={index} {...item} />
-            )}
-        </tr>
-        </thead>)
-    }
 }
 
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -760,41 +720,8 @@ class FileTable extends React.Component {
         return (
             <div>
                 <div className="row margin-bottom-10">
-                    <div className={`col-md-2 clearfix`}>
-                        <ul className={`list-group list-group-horizontal`}>
-                            <li className={`list-group-item`} style={{border: 'none'}}>
-                                <a onClick={(e) => this.addressClickHandler(e, 1)} data-target='back'>
-                                    <IconContext.Provider value={{size: '1.5em'}}>
-                                        <div>
-                                            <AiOutlineArrowLeft/>
-                                        </div>
-                                    </IconContext.Provider>
-                                </a>
-                            </li>
-                            <li className={`list-group-item`} style={{border: 'none'}}>
-                                <a onClick={(e) => this.addressClickHandler(e, 2)} data-target='forward'>
-                                    <IconContext.Provider value={{size: '1.5em'}}>
-                                        <div>
-                                            <AiOutlineArrowRight/>
-                                        </div>
-                                    </IconContext.Provider>
-                                </a>
-                            </li>
-                            <li className={`list-group-item`} style={{border: 'none'}}>
-                                <a onClick={(e) => this.addressClickHandler(e, 3)} data-target='up'>
-                                    <IconContext.Provider value={{size: '1.5em'}}>
-                                        <div>
-                                            <AiOutlineArrowUp/>
-                                        </div>
-                                    </IconContext.Provider>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className={`col-md-10 margin-top-5`}>
-                        <input className={`form-control fw-bold`} value={this.state.currentPrefix} readOnly={true}
-                        />
-                    </div>
+                    <DirectoryLine addressClickHandler={this.addressClickHandler}
+                                   currentPrefix={this.state.currentPrefix}/>
                 </div>
                 <InfoLine key={2} currentObjectNumbers={3} currentLevelSize="9G"/>
                 <div key={3} className="row margin-bottom-10">
@@ -819,26 +746,6 @@ class FileTable extends React.Component {
     }
 
 }
-
-class FileList extends React.Component {
-    constructor(props) {
-        super(props);
-
-    }
-
-    render() {
-        return (
-            <table key={4} className='table table-bordered'>
-                <Thead header={this.props.header}/>
-                <tbody>
-                {this.props.dirs}
-                {this.props.rows}
-                </tbody>
-            </table>
-        )
-    }
-}
-
 
 ReactDOM.render(
     // <LeftSideNavbar/>
