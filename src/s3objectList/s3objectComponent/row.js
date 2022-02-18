@@ -1,6 +1,6 @@
 import React from "react";
-import {sizeHandler} from "../../utils";
-import {Icon} from '../../icon'
+import {sizeHandler} from "../../utils/utils";
+import {Icon} from '../../icons/icon'
 
 export class Row extends React.Component {
     imageSupportList = [

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Icon} from "../icon";
-import {sizeHandler} from "../utils";
+import {Icon} from "../icons/icon";
+import {sizeHandler} from "../utils/utils";
 
 export function S3Dir(props) {
     const [displayKey, setDisplayKey] = useState()

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import Task from "./taskObj"
-import {sizeHandler} from "../utils";
+import {sizeHandler} from "../utils/utils";
 
 
 function TaskContainer(props) {

@@ -1,15 +1,15 @@
 import {useEffect, useState} from "react";
-import div from './images/div.png'
-import dir from './images/folderfile.png'
-import excel from './images/excel.png'
-import jpg from './images/jpg.png'
-import mp3 from './images/mp3.png'
-import mp4 from './images/mp4.png'
-import png from './images/png.png'
-import ppt from './images/ppt.png'
-import zip from './images/zip.png'
-import txt from './images/txt.png'
-import word from './images/word.png'
+import div from '../images/div.png'
+import dir from '../images/folderfile.png'
+import excel from '../images/excel.png'
+import jpg from '../images/jpg.png'
+import mp3 from '../images/mp3.png'
+import mp4 from '../images/mp4.png'
+import png from '../images/png.png'
+import ppt from '../images/ppt.png'
+import zip from '../images/zip.png'
+import txt from '../images/txt.png'
+import word from '../images/word.png'
 
 const imageDir = {
     div: div,

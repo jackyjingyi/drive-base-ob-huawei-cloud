@@ -1,15 +1,10 @@
 import React, {useEffect, useReducer, useState} from 'react'
 import ReactDOM from 'react-dom';
-import './index.css';
-import Banner from "./Banner"
+import './css/index.css';
+import Banner from "./banner/Banner"
 import {LoginModal} from "./Modals";
-import {Row} from './s3objectList/s3objectComponent/row';
-import {FileList} from "./s3objectList/s3objectComponent/fileList";
-import {sizeHandler} from "./utils";
-import {DirectoryLine} from './s3directoryFuncs/directoryLine'
-import {S3ObjectFuncs} from './s3ObjectPanel/s3ObjectFuncs/s3ObjectFuncs'
 import {Controller} from './s3ObjectPanel/s3ObjectPanel'
-import LeftSideNavbar from './Navbar'
+import LeftSideNavbar from './navbar/Navbar'
 import {TaskManager} from "./task/taskManager";
 import {UploadModal} from "./s3ObjectPanel/s3ObjectFuncs/S3ObjectFuncModals";
 
