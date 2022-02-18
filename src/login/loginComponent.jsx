@@ -35,11 +35,11 @@ function LoginModal(props) {
     const handleClose = () => setOpen(false);
     const [isLogin, setLogin] = useState(props.isLogin);
     const [ak, setAK] = useState(() => {
-        const saved = localStorage.getItem('ak')
+        const saved = window.localStorage.getItem('ak')
         return saved || ""
     })
     const [sk, setSK] = useState(() => {
-        const saved = localStorage.getItem('sk')
+        const saved = window.localStorage.getItem('sk')
         return saved || ""
     })
     const handleSK = (e) => {
@@ -51,9 +51,9 @@ function LoginModal(props) {
     }
 
     useEffect(() => {
-        localStorage.setItem("ak", ak)
-        localStorage.setItem("sk", sk)
-        localStorage.setItem('isLogin', isLogin)
+        window.localStorage.setItem("ak", ak)
+        window.localStorage.setItem("sk", sk)
+        window.localStorage.setItem('isLogin', isLogin)
     })
 
     const handleLogin = () => {
