@@ -1,0 +1,1 @@
+This software is build based on huaweicloud obs broswerjs sdk, provide simple, light, pure frontend drive solution. You can publish the software on obs use Website Hosting & CDN.
