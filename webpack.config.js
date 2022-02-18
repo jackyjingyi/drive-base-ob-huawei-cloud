@@ -2,7 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 
 module.exports = {
-    entry: path.resolve(__dirname, "./src/index.js"),
+    entry: "index.js",
     module: {
         rules: [
             {
@@ -10,7 +10,19 @@ module.exports = {
                 exclude: /node_modules/,
                 use: ["babel-loader"],
             },
+            {
+                test: /\.(png|jpg|jpeg|svg|bmp|webp|gif|tiff)$/,
+                exclude: /node_modules/,
+                use: ["url-loader"],
+                loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]'
+            }
         ],
+        // loaders: [
+        //     {
+        //         test: /\.(png|jpg|jpeg|svg|bmp|webp|gif|tiff)$/,
+        //         loader: 'url-loader?limit=8192&name=images/[hash:8].[name].[ext]'
+        //     }
+        // ]
     },
     resolve: {
         extensions: ["*", ".js", ".jsx"],

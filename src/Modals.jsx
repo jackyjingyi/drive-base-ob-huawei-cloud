@@ -3,11 +3,6 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import styled from "styled-components";
-import {useDropzone} from "react-dropzone";
-import {IconContext} from "react-icons";
-import {AiOutlineUpload} from "react-icons/ai";
-import {MdOutlineCreateNewFolder} from "react-icons/md";
 
 const style = {
     position: 'absolute',
@@ -34,150 +29,6 @@ const getColor = (props) => {
     return '#eeeeee';
 }
 
-const Container = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  border-width: 2px;
-  border-radius: 2px;
-  border-color: ${props => getColor(props)};
-  border-style: dashed;
-  background-color: #fafafa;
-  color: #bdbdbd;
-  outline: none;
-  transition: border .24s ease-in-out;
-`;
-
-
-function BasicModal(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const {
-        getRootProps,
-        getInputProps,
-        isFocused,
-        isDragAccept,
-        isDragReject,
-        acceptedFiles,
-    } = useDropzone();
-    const files = acceptedFiles.map(file => (
-        <li key={file.path}>
-            {file.path} - {file.size} bytes
-        </li>
-    ));
-
-    function uploadCallback() {
-        // upload(e, acceptedFiles, props.prefix);
-        props.addTasks(acceptedFiles, props.prefix)
-        handleClose();
-    }
-
-    return (
-        <div>
-            <Button className={`border`} onClick={handleOpen}>
-                <IconContext.Provider value={{size: '1.5em'}}>
-                    <div>
-                        <AiOutlineUpload/>
-                        <span>&nbsp;上传</span>
-                    </div>
-                </IconContext.Provider>
-            </Button>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
-                        上传对象
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{mt: 2}}>
-                    </Typography>
-                    <div className="container">
-                        <Container {...getRootProps({isFocused, isDragAccept, isDragReject})}>
-                            <input id='obsupload' {...getInputProps()} />
-                            <span>单击上传文件</span>
-                        </Container>
-                        <div>
-                            <button onClick={uploadCallback}>upload</button>
-                        </div>
-                        <ul>{files}</ul>
-                    </div>
-                </Box>
-            </Modal>
-        </div>
-    );
-}
-
-function InputModal(props) {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const namingRule = "\\:*?'<>|"
-    const [directory, setDirectory] = useState('')
-    const prefix = props.prefix
-
-    function handleDirectory(e) {
-        setDirectory(e.target.value)
-    }
-
-    function handleFresh() {
-        props.onFresh()
-    }
-
-    const putDir = () => {
-        // pud dir to obs
-        let newKey = prefix.toString() + {directory: directory}.directory + "/"
-        props.obsClient.putObject({
-            Bucket: bucketName,
-            Key: newKey
-        }, function (err, result) {
-            if (err) {
-                //console.error('Error-->' + err);
-            } else {
-                //console.log('Status-->' + result.CommonMsg.Status);
-                handleFresh();
-            }
-        });
-        handleClose();
-
-    }
-
-    return (
-        <div>
-            <Button className={`border`} onClick={handleOpen}>
-                <IconContext.Provider value={{size: '1.5em'}}>
-                    <div>
-                        <MdOutlineCreateNewFolder/>
-                        <span>&nbsp;新建文件夹</span>
-                    </div>
-                </IconContext.Provider>
-            </Button>
-            <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title"
-                   aria-describedby="modal-modal-description">
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="body2" component={'span'}>
-                        新建文件夹
-                    </Typography>
-                    <input className="form-control" value={directory} onChange={handleDirectory}/>
-                    <div id="modal-modal-description">
-                        <p><span>命名规则:</span></p>
-                        <p>- 文件夹名称不能包含以下字符 :<span>{namingRule}</span>。 </p>
-                        <p>- 文件夹名称不能以英文句号（.）或斜杠（/）开头或结尾。</p>
-                        <p>- 文件夹的绝对路径总长度不能超过1023字符。</p>
-                        <p>- 单个斜杠（/）表示分隔并创建多层级的文件夹。</p>
-                    </div>
-                    <Button onClick={putDir}>确定</Button><Button onClick={handleClose}>取消</Button>
-                </Box>
-            </Modal>
-        </div>
-    )
-}
-
 function LoginModal(props) {
     const [open, setOpen] = useState(!props.isLogin);
     const handleOpen = () => setOpen(true);
@@ -191,27 +42,19 @@ function LoginModal(props) {
         const saved = localStorage.getItem('sk')
         return saved || ""
     })
+    const handleSK = (e) => {
+        setSK(e.target.value)
+    }
 
-    function handleAk(e) {
+    const handleAk = (e) => {
         setAK(e.target.value)
     }
 
-
     useEffect(() => {
         localStorage.setItem("ak", ak)
-    })
-
-    useEffect(() => {
         localStorage.setItem("sk", sk)
-    })
-
-    useEffect(() => {
         localStorage.setItem('isLogin', isLogin)
     })
-
-    function handleSK(e) {
-        setSK(e.target.value)
-    }
 
     const handleLogin = () => {
         setLogin(true)
@@ -238,7 +81,7 @@ function LoginModal(props) {
                         请登录
                     </Typography>
                     <input aria-label={`ak`} className="form-control" value={ak} onChange={handleAk}/>
-                    <input aria-label={`sk`} className="form-control" value={sk} onChange={handleSK}/>
+                    <input aria-label={`sk`} className="form-control" value={sk} onChange={handleSK} type={`password`}/>
                     <div id="modal-modal-description">
                         <p><span>说明:</span></p>
                         <p>- 基于集团安全要求: </p>
@@ -253,4 +96,4 @@ function LoginModal(props) {
     );
 }
 
-export {BasicModal, InputModal, LoginModal};
+export {LoginModal};

@@ -6,7 +6,7 @@ import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineArrowUp} from "react-i
 export function DirectoryLine(props) {
 
     return [
-        <div className={`col-md-2 clearfix`}>
+        <div className={`col-md-2 clearfix`} key={0}>
             <ul className={`list-group list-group-horizontal`}>
                 <li className={`list-group-item`} style={{border: 'none'}}>
                     <a onClick={(e) => props.addressClickHandler(e, 1)} data-target='back'>
@@ -37,7 +37,7 @@ export function DirectoryLine(props) {
                 </li>
             </ul>
         </div>,
-        <div className={`col-md-10 margin-top-5`}>
+        <div className={`col-md-10 margin-top-5`} key={1}>
             <input className={`form-control fw-bold`} value={props.currentPrefix} readOnly={true}
             />
         </div>

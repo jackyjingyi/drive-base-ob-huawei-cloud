@@ -1,5 +1,6 @@
 import React from "react";
 import {sizeHandler} from "../../utils";
+import {Icon} from '../../icon'
 
 export class Row extends React.Component {
     imageSupportList = [
@@ -16,10 +17,11 @@ export class Row extends React.Component {
     }
 
     componentDidMount() {
-        if (this.state.isImage) {+
-            this.setState({
-                imageUrl: 'https://' + this.props.bucketName + '.' + this.props.server + '/' + this.props.Key + '?x-image-process=image/resize,m_lfit,h_200,w_200',
-            })
+        if (this.state.isImage) {
+            +
+                this.setState({
+                    imageUrl: 'https://' + this.props.bucketName + '.' + this.props.server + '/' + this.props.Key + '?x-image-process=image/resize,m_lfit,h_200,w_200',
+                })
         }
     }
 
@@ -60,6 +62,8 @@ export class Row extends React.Component {
                     // alt={this.props.Key}
                 />
             )
+        } else {
+            return (<Icon isDir={false} Key={this.props.Key} isLarge={false}/>)
         }
     }
 
