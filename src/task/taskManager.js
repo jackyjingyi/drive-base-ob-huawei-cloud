@@ -37,7 +37,7 @@ function useAssignTask(tasks, clickHandler) {
                 if (item[3] === item[4]) {
                     st = "已完成"
                 }
-                console.log(item[0])
+
                 return (
                     <Task key={index} name={item[1]} size={sizeHandler(item[2])} progress={pr} type="上传"
                           status={st}

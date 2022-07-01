@@ -14,6 +14,11 @@ const LeftSideNavbar = (props) => {
                 <a key={2} className="nav-link" onClick={(e) => props.onClick(e, 1)}>任务管理
                 </a>
             </li>
+             <li className="nav-item border">
+                 <a key={3} className="nav-link" href="https://bigdata.octiri.com" target={'_blank'}>
+                     返回数字大脑首页
+                 </a>
+            </li>
         </ul>
 
     )

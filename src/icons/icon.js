@@ -40,7 +40,9 @@ export function Icon(props) {
                 return setImage(imageDir.dir)
             } else {
                 switch (type) {
-                    case 'xlsx' || 'xls':
+                    case 'xlsx':
+                        return setImage(imageDir.excel)
+                    case 'xls':
                         return setImage(imageDir.excel)
                     case 'dir':
                         return setImage(imageDir.dir)
@@ -52,7 +54,9 @@ export function Icon(props) {
                         return setImage(imageDir.mp4)
                     case 'png':
                         return setImage(imageDir.png)
-                    case 'ppt' || 'pptx':
+                    case 'ppt':
+                        return setImage(imageDir.ppt)
+                    case 'pptx':
                         return setImage(imageDir.ppt)
                     case 'txt':
                         return setImage(imageDir.txt)

@@ -61,7 +61,6 @@ export function DriveController(props) {
             secret_access_key: sk,
             server: server,
         }))
-
     }, [ak, sk])
 
     function handleUserLogin(a, s) {

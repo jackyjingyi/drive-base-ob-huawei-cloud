@@ -2,6 +2,10 @@ import React, {useEffect, useReducer, useState} from 'react'
 import ReactDOM from 'react-dom';
 import './css/index.css';
 import {DriveController} from "./core/DriveController";
+import {BrowserRouter} from "react-router-dom"
+import {store} from './app/store'
+import {Provider} from "react-redux";
+import App from './App'
 
 var bucketName = 'oct-project-collection' //'iri-drive-bucket'  //'dev-do-not-delete''oct-project-collection'
 
@@ -23,22 +27,16 @@ Date.prototype.Format = function (fmt) { //author: meizz
     return fmt;
 }
 
-class InfoLine extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div className="row margin-bottom-10">
-                <p>对象数{this.props.currentObjectNumbers} | 容量： {this.props.currentLevelSize}</p>
-            </div>
-        )
-    }
-}
 
 ReactDOM.render(
     // <LeftSideNavbar/>
-    <DriveController bucketName={bucketName} server={`obs.cn-south-1.myhuaweicloud.com`}/>,
+    <React.StrictMode>
+        <Provider store={store}>
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
+        </Provider>
+    </React.StrictMode>,
+    // <DriveController bucketName={bucketName} server={`obs.cn-south-1.myhuaweicloud.com`}/>,
     document.getElementById('root')
 );

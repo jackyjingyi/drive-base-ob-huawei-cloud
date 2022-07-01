@@ -1,11 +1,11 @@
-import React, {useEffect, useReducer, useState} from "react";
+import React, {useContext, useEffect, useReducer, useState} from "react";
 import {IconContext} from "react-icons";
 import {AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineArrowUp, AiOutlineAppstore} from "react-icons/ai";
 import {BsList} from "react-icons/bs"
 import {UploadModal, CreateDirectoryModal} from "./s3ObjectFuncs/S3ObjectFuncModals";
 import {S3Dir, S3Object} from "./S3Object";
 import {S3ObjectAppPanel, S3ObjectListPanel} from "./S3ObjectContainer";
-
+import {RepoContext} from "../contextManager";
 const iconStyle = {}
 
 function FuncContainer(props) {
@@ -19,8 +19,9 @@ function FuncContainer(props) {
 
 
 export function Controller(props) {
+    const {prefix} = useContext(RepoContext)
     const [directoryInfo, setDiretoryInfo] = useReducer((directoryInfo, newDirectory) => ({...directoryInfo, ...newDirectory}), {
-        Contents: [], CommonPrefixes: [], Prefix: props.cp
+        Contents: [], CommonPrefixes: [], Prefix: prefix
     })
     const [history, setHistory] = useState([{Prefix: '',}])
     const [forceUpdate, setForceUpdate] = useReducer(x => x + 1, 0) // 强制更新
@@ -65,12 +66,14 @@ export function Controller(props) {
 
     useEffect(async () => {
         if (props.obsClient instanceof ObsClient) {
+            console.group("List Repo Start")
             const listObjs = await props.obsClient.listObjects({
                 Bucket: props.bucketName,
                 MaxKeys: 1000,
                 Delimiter: '/',
-                Prefix: directoryInfo.Prefix,
+                Prefix: directoryInfo.Prefix, //初始路径
             })
+            console.log(directoryInfo.Prefix, prefix)
             if (listObjs.CommonMsg.Status < 300) {
                 setDiretoryInfo({
                     Contents: listObjs.InterfaceResult.Contents,
@@ -78,13 +81,19 @@ export function Controller(props) {
                     Prefix: listObjs.InterfaceResult.Prefix,
                 })
                 console.log(directoryInfo.Prefix)
-                props.setPrefix(directoryInfo.Prefix)
+                // props.setPrefix(directoryInfo.Prefix)
             }
+            console.groupEnd()
         }
-    }, [directoryInfo.Prefix, forceUpdate, props.needRefresh, props.obsClient])
+    }, [directoryInfo.Prefix])
+
+    useEffect(() => {
+        setDiretoryInfo({
+            Prefix: prefix
+        })
+    }, [prefix])
 
     function backward() {
-
         if (stepNumber > 0) {
             setStepNumber(stepNumber - 1)
             setDiretoryInfo({
