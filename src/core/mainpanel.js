@@ -13,7 +13,9 @@ export default function ProductPanel(props) {
     const params = useParams()
     const navigate = useNavigate()
     const {prefix, productTypes, productTab, setProductTab, formatTab, setFormatTab} = useContext(RepoContext)
-
+    useEffect(()=>{
+        setFormatTab('list')
+    },[params.regionCompanyID, params.productType])
     function handleClickFormat(k) {
         setFormatTab(k)
         navigate(`/region-company/${params.regionCompanyID}/type/${params.productType}/${k}`)

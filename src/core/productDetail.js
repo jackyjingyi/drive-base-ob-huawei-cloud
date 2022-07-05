@@ -16,15 +16,6 @@ const match = {
 
 }
 
-function getInfo(name) {
-    for (let i = 0; i <= thumbnailList.length; i++) {
-        if (thumbnailList[i].name === name) {
-            return thumbnailList[i]
-        }
-    }
-
-}
-
 export default function ProductDetail() {
     // display image
     const {obsClient} = useContext(RepoContext)
@@ -32,7 +23,10 @@ export default function ProductDetail() {
     const params = useParams()
     const productID = params.productID
     const navigate = useNavigate()
-    const info = getInfo(productID)
+    const infoList = thumbnailList.find(q =>q.region=== params.regionCompanyID && q.productType=== params.productType)
+
+    const info = infoList? infoList.results.find(q=>q.name===productID):[]
+
 
 
     function handleDownload(e) {

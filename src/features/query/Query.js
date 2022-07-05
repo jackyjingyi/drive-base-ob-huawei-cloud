@@ -9,6 +9,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import {useDispatch, useSelector} from 'react-redux'
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import './Query.css'
 
 const testFilterData = [{tagKey: '战区', tagVal: '东部战区'}, {tagKey: '战区', tagVal: '西部战区'}, {
     tagKey: '面积', tagVal: '400m2'
@@ -85,14 +87,48 @@ function ChoiceTag(props) {
 
 
 function ChoiceContainer(props) {
-    const [isMulti, setIsMulti] = useState(false)
-    const subCategory = useSelector(state => state.query.categories.find(cate => cate.id === props.queryID))
+
+    const [multiple, setMultiple] = useState('')
     const handleClick = () => {
-        setIsMulti(!isMulti)
+        setMultiple('multiple')
     }
-    return (<Box sx={{border: '1px dashed'}}>
-        {subCategory.options.map(option => (<ChoiceTag key={option.id} tagVal={option.tagVal} isMulti={isMulti}/>))}
-        <Button onClick={handleClick}>多选</Button>
+
+    const handleFocus = () => {
+
+    }
+    return (<Box component={`div`}>
+
+        <Box className={`sl-wrap ${multiple}`} component={`div`}>
+            <Box className={`sl-key`} component={`div`}>
+                <strong>
+                    {props.verboseName}
+                </strong>
+            </Box>
+            <Box className={`sl-value`} component={`div`}>
+                <Box className={`sl-v-list`} component={`div`}>
+                    {props.options.map(option => (
+                        <ChoiceTag key={option.id} tagVal={option.tagVal} isMulti={multiple === 'multiple'}/>))}
+                </Box>
+                <Box className={`sl-btns`}>
+                    <Button className={`J_btnsConfirm`} color={`primary`} variant={`contained`} size={`small`}>
+                        确认
+                    </Button>
+                    <Button className={`J_btnsCancel`} color={`primary`} variant={`contained`} size={`small`}>
+                        取消
+                    </Button>
+                </Box>
+            </Box>
+            <Box className={`sl-ext`} compoent={`div`}
+                 sx={{
+                     visibility: multiple === 'multiple' ? 'hidden' : 'visible'
+                 }}
+            >
+                <a className={`sl-e-multiple J_extMultiple`} onClick={handleClick} onFocus={handleFocus}>
+                    多选
+                    <i></i>
+                </a>
+            </Box>
+        </Box>
     </Box>)
 }
 
@@ -103,7 +139,12 @@ export default function Query() {
         <FilterTag key={nanoid()} tagKey={tag.tagKey} tagVal={tag.tagVal}/>))
     const queries = useSelector(state => state.query)
     // frame
-    const renderChoices = queries.categories.map(query => (<ChoiceContainer queryID={query.id}/>))
+    const renderChoices = queries.categories.map(query => (
+        query.tags.map(q => (
+            <ChoiceContainer key={q.id} {...q}/>
+        ))
+
+    ))
 
 
     return (<React.Fragment>
@@ -123,7 +164,9 @@ export default function Query() {
                     </Breadcrumbs>
                 </React.Fragment>
                 <React.Fragment>
-                    {renderChoices}
+                    <Box className={`selector`} component={`div`}>
+                        {renderChoices}
+                    </Box>
                 </React.Fragment>
             </Box>
         </React.Fragment>

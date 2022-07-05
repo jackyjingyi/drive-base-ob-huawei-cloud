@@ -18,7 +18,7 @@ import $ from 'jquery'
 import {UploadModal} from "./s3ObjectPanel/s3ObjectFuncs/S3ObjectFuncModals";
 import {Controller} from "./s3ObjectPanel/s3ObjectPanel";
 import {LoginModal} from "./login/loginComponent";
-import {RegionDict, searchDataGrim, bucketName, s3server, companyProductDir, productType, companyID} from './config'
+import {RegionDict, searchDataGrim, bucketName, s3server, companyProductDir, productType} from './config'
 import Banner from "./banner/Banner";
 import {RepoContext} from "./contextManager";
 import ProductPanel from "./core/mainpanel";
@@ -26,6 +26,7 @@ import ProductList from "./core/productList"
 import Thumbnail from "./core/thumbnail";
 import ProductDetail from "./core/productDetail";
 import Query from './features/query/Query'
+import BasicTabs from "./features/tabs/Tabs";
 
 const style = {
     position: 'absolute',
@@ -93,7 +94,7 @@ function App() {
                         <Route path={`list`} element={<ProductList/>}/>
                         <Route path={`thumnail`} element={<Thumbnail/>}/>
                     </Route>
-                    <Route path={`:productType/:productID`} element={<ProductDetail/>}/>
+                    <Route path={`:productID`} element={<ProductDetail/>}/>
                 </Route>
             </Route>
         </Routes>
@@ -103,78 +104,37 @@ function App() {
 
 function Home() {
     const location = useLocation()
-    const params = useParams()
     const [breadcrumbs, setBreadcrumbs] = useState([])
     const bannerSX = {
-        width: "100%", height: "10vh", paddingLeft: '12px', paddingRight: '12px'
+        width: "100%", height: "10vh"
     }
 
-    return (<div className={`container-fluid page`}>
-        <Box className={`banner`} sx={bannerSX}>
-            <Banner/>
-        </Box>
-        <Grid className={`main`}>
-            <Grid container spacing={0} columns={total}>
-                <Grid item xs={left} className={`leftSideMenu`} sx={{
-                    height: '80vh', minHeight: '80vh', overflowY: 'scroll'
-                }}>
-                    <Stack>
-                        <Box className={``}>
-                            <Title>主数据检索</Title>
-                        </Box>
-                        <Box>
-                            <Grid container direction={`column`}>
-                                {searchDataGrim.map((item, index) => {
-                                    return (<Grid item key={index}>
-                                        <Grid container sx={{display: 'flex'}}>
-                                            <Grid item xs={titleWidth} className={`infoType`}
-                                                  sx={{height: '100%', backgroundColor: '#E2E6EA'}}>
-                                                <Item>{item.title}</Item>
-                                            </Grid>
-                                            <Grid item xs={defaultTotal - titleWidth}>
-                                                <Box sx={{display: 'inline-block'}}>
-                                                    {item.tags.map((n, j) => {
+    return (
+        <React.Fragment>
+            <Box sx={bannerSX}>
+                <Banner/>
+            </Box>
+            <div className={`container-fluid page`}>
+                <Grid container spacing={0}
+                      direction={`column`}
+                      alignItems="stretch"
+                      justifyContent="flex-start"
+                >
+                    <Grid item sx={{marginTop:'10px'}}>
+                        <BasicTabs>
 
-                                                        if (n.link !== null) {
-                                                            return (<Tag id={j} key={j}>
-                                                                <Button size={`small`} fullWidth
-                                                                        variant={`text`}
-                                                                        color={`secondary`}
-                                                                >
-                                                                    <NavLink to={`${n.link}/type/highBuilding`}
-                                                                             style={{
-                                                                                 backgroundColor: params.regionCompanyID === n.id ? "#8FAADC" : "",
-                                                                                 textDecorationLine: "none",
-                                                                                 color: "black",
-                                                                             }}
-
-                                                                    >{n.name}</NavLink>
-                                                                </Button>
-                                                            </Tag>)
-                                                        } else {
-
-                                                            return (<Tag key={j}>
-                                                                <Button size={`small`} disabled>
-                                                                    {n.name}
-                                                                </Button>
-                                                            </Tag>)
-                                                        }
-                                                    })}
-                                                </Box>
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>)
-                                })}
-                            </Grid>
-                        </Box>
-                    </Stack>
+                        </BasicTabs>
+                    </Grid>
+                    <Grid item sx={{marginBottom:'10px'}}>
+                        <Query/>
+                    </Grid>
+                    <Grid item>
+                        <Outlet/>
+                    </Grid>
                 </Grid>
-                <Grid item xs={total - left}>
-                    <Outlet/>
-                </Grid>
-            </Grid>
-        </Grid>
-    </div>)
+            </div>
+        </React.Fragment>
+    )
 }
 
 function MapsPanel() {

@@ -53,7 +53,7 @@ const columns: GridColDef[] = [{
     width: 450,
     editable: false,
     renderCell: (params) => (<NavLink style={{textDecorationLine: 'none'}}
-                                      to={`/region-company/${params.row.region}/${params.row.modelCode}/`}>{params.row.modelCode}</NavLink>)
+                                      to={`/region-company/${params.row.region}/${params.row.productType}/${params.row.modelCode}/`}>{params.row.modelCode}</NavLink>)
 }, {
     field: 'structure', headerName: '梯户比', width: 150
 }, {field: 'buildingType', headerName: '体型特征', width: 150}, {
@@ -72,7 +72,8 @@ const testRows = [{
     buildingCombine: '105㎡+90㎡+90㎡+105㎡',
     location: '华东战区-南京-燕熙台项目-B07#楼',
     rate: 96,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '02',
@@ -82,7 +83,8 @@ const testRows = [{
     buildingCombine: '125㎡+90㎡+90㎡+125㎡',
     location: '华东战区-南京-燕熙台项目-A06#楼',
     rate: 92,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '03',
@@ -92,7 +94,8 @@ const testRows = [{
     buildingCombine: '115㎡+95㎡+95㎡+115㎡',
     location: '华东战区-无锡-运河城项目-A7#楼',
     rate: 95,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '04',
@@ -102,7 +105,8 @@ const testRows = [{
     buildingCombine: '125㎡+105㎡+105㎡+125㎡',
     location: '华东战区-苏州-WG-31号地块项目-1#楼',
     rate: 96,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '05',
@@ -110,9 +114,10 @@ const testRows = [{
     structure: '2T4',
     buildingType: '板式',
     buildingCombine: '130㎡+105㎡+105㎡+130㎡',
-    location: '华东战区-南京-燕熙台项目-B09#楼\n',
+    location: '华东战区-南京-燕熙台项目-B09#楼',
     rate: 90,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '06',
@@ -122,7 +127,8 @@ const testRows = [{
     buildingCombine: '140㎡+105㎡+105㎡+140㎡',
     location: '华东战区-苏州-WG-31号地块项目-3#楼',
     rate: 96,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 }, {
     action: '',
     id: '07',
@@ -132,7 +138,8 @@ const testRows = [{
     buildingCombine: '115㎡+95㎡*4+115㎡',
     location: '华东战区-扬州-华侨城项目-B3-15#楼',
     rate: 92,
-    region: 'chinaEast'
+    region: 'chinaEast',
+    productType:'highBuilding',
 },
 
 ]
@@ -183,7 +190,6 @@ function CustomNoRowsOverlay() {
                 <Box sx={{mt: 1}}>暂无数据</Box>
             </StyledGridOverlay>
         </ThemeProvider>
-
     );
 }
 

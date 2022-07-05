@@ -36,15 +36,15 @@ export function companyProductDir(company, type = null) {
 
 // 左侧的搜索栏目
 export const searchDataGrim = [{
-    index: 0, title: '所属战区', tags: [{
+    index: 0, title: '所属战区', tags: [{id:'chinaEast',
         name: '华东战区', link: `/region-company/chinaEast`, // react router link
-    }, {
+    }, {id:'chinaWest',
         name: '西部战区', link: `/region-company/chinaWest`, // react router link
-    }, {
+    }, {id:'chinaSouth',
         name: '华南战区', link: `/region-company/chinaSouth`, // react router link
-    }, {
+    }, {id:'chinaNorth',
         name: '北方战区', link: `/region-company/chinaNorth`, // react router link
-    }, {
+    }, {id:'chinaMiddle',
         name: '中部战区', link: `/region-company/chinaMiddle`, // react router link
     },]
 
@@ -115,69 +115,76 @@ export const thumbnailDir = 'thumbnail/'
 export const imageDIR = 'structure-image/'
 export const thumbnailList = [
     {
-        index: '01',
-        name: 'HD-G(19-33F)-2T4-390',
-        thumbnail: 'HD-G(19-33F)-2T4-390-SL.png',
-        image: 'HD-G(19-33F)-2T4-390.png',
-        dir: '01.HD-G(19-33F)-2T4-390',
-        dwg: '01.HD-G(19-33F)-2T4-390.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-390.pdf',
-    },
-    {
-        index: '02',
-        name: 'HD-G(19-33F)-2T4-430',
-        thumbnail: 'HD-G(19-33F)-2T4-430-SL.png',
-        image: 'HD-G(19-33F)-2T4-430.png',
-        dir: '02.HD-G(19-33F)-2T4-430',
-        dwg: '01.HD-G(19-33F)-2T4-430.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-430.pdf'
-    },
-    {
-        index: '03',
-        name: 'HD-G(19-33F)-2T4-420',
-        thumbnail: 'HD-G(19-33F)-2T4-420-SL.png',
-        image: 'HD-G(19-33F)-2T4-420.png',
-        dir: '03.HD-G(19-33F)-2T4-420',
-        dwg: '01.HD-G(19-33F)-2T4-420.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-420.pdf'
-    },
-    {
-        index: '04',
-        name: 'HD-G(19-33F)-2T4-460',
-        thumbnail: 'HD-G(19-33F)-2T4-460-SL.png',
-        image: 'HD-G(19-33F)-2T4-460.png',
-        dir: '04.HD-G(19-33F)-2T4-460',
-        dwg: '01.HD-G(19-33F)-2T4-460.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-460.pdf'
+        region: 'chinaEast',
+        productType: 'highBuilding',
+        results: [
+            {
+                index: '01',
+                name: 'HD-G(19-33F)-2T4-390',
+                thumbnail: 'HD-G(19-33F)-2T4-390-SL.png',
+                image: 'HD-G(19-33F)-2T4-390.png',
+                dir: '01.HD-G(19-33F)-2T4-390',
+                dwg: '01.HD-G(19-33F)-2T4-390.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-390.pdf',
+            },
+            {
+                index: '02',
+                name: 'HD-G(19-33F)-2T4-430',
+                thumbnail: 'HD-G(19-33F)-2T4-430-SL.png',
+                image: 'HD-G(19-33F)-2T4-430.png',
+                dir: '02.HD-G(19-33F)-2T4-430',
+                dwg: '01.HD-G(19-33F)-2T4-430.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-430.pdf'
+            },
+            {
+                index: '03',
+                name: 'HD-G(19-33F)-2T4-420',
+                thumbnail: 'HD-G(19-33F)-2T4-420-SL.png',
+                image: 'HD-G(19-33F)-2T4-420.png',
+                dir: '03.HD-G(19-33F)-2T4-420',
+                dwg: '01.HD-G(19-33F)-2T4-420.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-420.pdf'
+            },
+            {
+                index: '04',
+                name: 'HD-G(19-33F)-2T4-460',
+                thumbnail: 'HD-G(19-33F)-2T4-460-SL.png',
+                image: 'HD-G(19-33F)-2T4-460.png',
+                dir: '04.HD-G(19-33F)-2T4-460',
+                dwg: '01.HD-G(19-33F)-2T4-460.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-460.pdf'
 
+            },
+            {
+                index: '05',
+                name: 'HD-G(19-33F)-2T4-470',
+                thumbnail: 'HD-G(19-33F)-2T4-470-SL.png',
+                image: 'HD-G(19-33F)-2T4-470.png',
+                dir: '05.HD-G(19-33F)-2T4-470',
+                dwg: '01.HD-G(19-33F)-2T4-470.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-470.pdf'
+            },
+            {
+                index: '06',
+                name: 'HD-G(19-33F)-2T4-490',
+                thumbnail: 'HD-G(19-33F)-2T4-490-SL.png',
+                image: 'HD-G(19-33F)-2T4-490.png',
+                dir: '06.HD-G(19-33F)-2T4-490',
+                dwg: '01.HD-G(19-33F)-2T4-490.dwg',
+                pdf: '02.HD-G(19-33F)-2T4-490.pdf'
+            },
+            {
+                index: '07',
+                name: 'HD-G(19-33F)-3T6-610',
+                thumbnail: 'HD-G(19-33F)-3T6-610-SL.png',
+                image: 'HD-G(19-33F)-3T6-610.png',
+                dir: '07.HD-G(19-33F)-3T6-610',
+                dwg: '01.HD-G(19-33F)-3T6-610.dwg',
+                pdf: '02.HD-G(19-33F)-3T6-610.pdf'
+            },
+        ]
     },
-    {
-        index: '05',
-        name: 'HD-G(19-33F)-2T4-470',
-        thumbnail: 'HD-G(19-33F)-2T4-470-SL.png',
-        image: 'HD-G(19-33F)-2T4-470.png',
-        dir: '05.HD-G(19-33F)-2T4-470',
-        dwg: '01.HD-G(19-33F)-2T4-470.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-470.pdf'
-    },
-    {
-        index: '06',
-        name: 'HD-G(19-33F)-2T4-490',
-        thumbnail: 'HD-G(19-33F)-2T4-490-SL.png',
-        image: 'HD-G(19-33F)-2T4-490.png',
-        dir: '06.HD-G(19-33F)-2T4-490',
-        dwg: '01.HD-G(19-33F)-2T4-490.dwg',
-        pdf: '02.HD-G(19-33F)-2T4-490.pdf'
-    },
-    {
-        index: '07',
-        name: 'HD-G(19-33F)-3T6-610',
-        thumbnail: 'HD-G(19-33F)-3T6-610-SL.png',
-        image: 'HD-G(19-33F)-3T6-610.png',
-        dir: '07.HD-G(19-33F)-3T6-610',
-        dwg: '01.HD-G(19-33F)-3T6-610.dwg',
-        pdf: '02.HD-G(19-33F)-3T6-610.pdf'
-    },
+
 
 ]
 
