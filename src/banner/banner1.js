@@ -103,7 +103,5 @@ const Banner = () => {
             </Grid>
         </Grid>
     </ThemeProvider>)
-
 }
-//123
 export default Banner

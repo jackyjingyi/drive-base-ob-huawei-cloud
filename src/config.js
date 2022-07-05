@@ -47,7 +47,6 @@ export const searchDataGrim = [{
     }, {id:'chinaMiddle',
         name: '中部战区', link: `/region-company/chinaMiddle`, // react router link
     },]
-
 }, {
     index: 1, title: '所属地区', tags: [{
         name: '北京', link: null,

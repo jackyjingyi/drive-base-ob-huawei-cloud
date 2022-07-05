@@ -63,84 +63,92 @@ const columns: GridColDef[] = [{
 }, {field: 'rate', headerName: '评分', width: 100}]
 
 
-const testRows = [{
-    action: '',
-    id: '01',
-    modelCode: 'HD-G(19-33F)-2T4-390',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '105㎡+90㎡+90㎡+105㎡',
-    location: '华东战区-南京-燕熙台项目-B07#楼',
-    rate: 96,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '02',
-    modelCode: 'HD-G(19-33F)-2T4-430',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '125㎡+90㎡+90㎡+125㎡',
-    location: '华东战区-南京-燕熙台项目-A06#楼',
-    rate: 92,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '03',
-    modelCode: 'HD-G(19-33F)-2T4-420',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '115㎡+95㎡+95㎡+115㎡',
-    location: '华东战区-无锡-运河城项目-A7#楼',
-    rate: 95,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '04',
-    modelCode: 'HD-G(19-33F)-2T4-460',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '125㎡+105㎡+105㎡+125㎡',
-    location: '华东战区-苏州-WG-31号地块项目-1#楼',
-    rate: 96,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '05',
-    modelCode: 'HD-G(19-33F)-2T4-470',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '130㎡+105㎡+105㎡+130㎡',
-    location: '华东战区-南京-燕熙台项目-B09#楼',
-    rate: 90,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '06',
-    modelCode: 'HD-G(19-33F)-2T4-490',
-    structure: '2T4',
-    buildingType: '板式',
-    buildingCombine: '140㎡+105㎡+105㎡+140㎡',
-    location: '华东战区-苏州-WG-31号地块项目-3#楼',
-    rate: 96,
-    region: 'chinaEast',
-    productType:'highBuilding',
-}, {
-    action: '',
-    id: '07',
-    modelCode: 'HD-G(19-33F)-3T6-610',
-    structure: '3T6',
-    buildingType: '板式',
-    buildingCombine: '115㎡+95㎡*4+115㎡',
-    location: '华东战区-扬州-华侨城项目-B3-15#楼',
-    rate: 92,
-    region: 'chinaEast',
-    productType:'highBuilding',
-},
+const testRows = [
+    {
+        region: 'chinaEast',
+        productType: 'highBuilding',
+        results: [
+            {
+                action: '',
+                id: '01',
+                modelCode: 'HD-G(19-33F)-2T4-390',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '105㎡+90㎡+90㎡+105㎡',
+                location: '华东战区-南京-燕熙台项目-B07#楼',
+                rate: 96,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '02',
+                modelCode: 'HD-G(19-33F)-2T4-430',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '125㎡+90㎡+90㎡+125㎡',
+                location: '华东战区-南京-燕熙台项目-A06#楼',
+                rate: 92,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '03',
+                modelCode: 'HD-G(19-33F)-2T4-420',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '115㎡+95㎡+95㎡+115㎡',
+                location: '华东战区-无锡-运河城项目-A7#楼',
+                rate: 95,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '04',
+                modelCode: 'HD-G(19-33F)-2T4-460',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '125㎡+105㎡+105㎡+125㎡',
+                location: '华东战区-苏州-WG-31号地块项目-1#楼',
+                rate: 96,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '05',
+                modelCode: 'HD-G(19-33F)-2T4-470',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '130㎡+105㎡+105㎡+130㎡',
+                location: '华东战区-南京-燕熙台项目-B09#楼',
+                rate: 90,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '06',
+                modelCode: 'HD-G(19-33F)-2T4-490',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '140㎡+105㎡+105㎡+140㎡',
+                location: '华东战区-苏州-WG-31号地块项目-3#楼',
+                rate: 96,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            }, {
+                action: '',
+                id: '07',
+                modelCode: 'HD-G(19-33F)-3T6-610',
+                structure: '3T6',
+                buildingType: '板式',
+                buildingCombine: '115㎡+95㎡*4+115㎡',
+                location: '华东战区-扬州-华侨城项目-B3-15#楼',
+                rate: 92,
+                region: 'chinaEast',
+                productType: 'highBuilding',
+            },
+
+        ]
+    },
 
 ]
 
@@ -197,12 +205,7 @@ export default function ProductList() {
     const params = useParams()
     const [rows, setRows] = useState([])
     useEffect(() => {
-        if (params.regionCompanyID === 'chinaEast' && params.productType === 'highBuilding') {
-            setRows(testRows)
-        } else {
-            setRows([])
-        }
-
+        setRows(testRows.find(q => q.productType === params.productType && q.region === params.regionCompanyID).results)
     }, [params.regionCompanyID, params.productType])
     return (<Box sx={{height: '70vh', width: '100%'}}>
         <ThemeProvider theme={theme}>
