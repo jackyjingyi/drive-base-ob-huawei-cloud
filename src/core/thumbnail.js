@@ -91,7 +91,7 @@ export default function Thumbnail() {
         <Grid item xs={3} key={item.name}>
             <img data-target={item.name} className={`thumbnailImg`}
                  onClick={(e) => handleImageClick(e)}
-                 src={`${cdnBaseURL}${thumbnailDir}${item.thumbnail}`}/>
+                 src={`${cdnBaseURL}${params.regionCompanyID}/${params.productType}/${thumbnailDir}${item.thumbnail}?x-image-process=image/resize,w_500,limit_0`}/>
         </Grid>
     )):<CustomNoRowsOverlay/>
 

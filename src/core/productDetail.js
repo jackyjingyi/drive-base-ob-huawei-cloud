@@ -72,7 +72,7 @@ export default function ProductDetail() {
                 >CAD</Button>
             </ButtonGroup>
         </Stack>
-        <img className={`fullImage`} src={`${cdnBaseURL}${imageDIR}${params.productID}.png`}/>
+        <img className={`fullImage`} src={`${cdnBaseURL}${params.regionCompanyID}/${params.productType}/${imageDIR}${params.productID}.png`}/>
     </Box>)
 }
 

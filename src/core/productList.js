@@ -149,6 +149,113 @@ const testRows = [
 
         ]
     },
+    {
+        region: 'chinaEast',
+        productType: 'medianBuilding',
+        results: [
+            {
+                action: '',
+                id: '01',
+                modelCode: 'HD-ZG(12-18F)-2T2-190',
+                structure: '2T2',
+                buildingType: '板式',
+                buildingCombine: '95㎡+95㎡',
+                location: '华东战区-上海-唐镇项目-6#楼',
+                rate: 91,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                thumbnail: 'HD-ZG(12-18F)-2T2-190-SL.png',
+                image: 'HD-ZG(12-18F)-2T2-190.png',
+                dir: '01.HD-ZG(12-18F)-2T2-190',
+                dwg: '01.HD-ZG(12-18F)-2T2-190.dwg',
+                pdf: '01.HD-ZG(12-18F)-2T2-190.pdf',
+            },
+            {
+                action: '',
+                id: '02',
+                modelCode: 'HD-ZG(12-18F)-2T2-230',
+                structure: '2T2',
+                buildingType: '板式',
+                buildingCombine: '115㎡+115㎡',
+                location: '华东战区-无锡-运河城项目-B5#楼',
+                rate: 92,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                thumbnail: 'HD-ZG(12-18F)-2T2-230-SL.png',
+                image: 'HD-ZG(12-18F)-2T2-230.png',
+                dir: '02.HD-ZG(12-18F)-2T2-230',
+                dwg: '02.HD-ZG(12-18F)-2T2-230.dwg',
+                pdf: '02.HD-ZG(12-18F)-2T2-230.pdf'
+            },
+            {
+                action: '',
+                id: '03',
+                modelCode: 'HD-ZG(12-18F)-2T2-270',
+                structure: '2T2',
+                buildingType: '板式',
+                buildingCombine: '135㎡+135㎡',
+                location: '华东战区-无锡-运河城项目-A3#楼',
+                rate: 94,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                thumbnail: 'HD-ZG(12-18F)-2T2-270-SL.png',
+                image: 'HD-ZG(12-18F)-2T2-270.png',
+                dir: '03.HD-ZG(12-18F)-2T2-270',
+                dwg: '03.HD-ZG(12-18F)-2T2-270.dwg',
+                pdf: '03.HD-ZG(12-18F)-2T2-270.pdf'
+            },
+            {
+                action: '',
+                id: '04',
+                modelCode: 'HD-ZG(12-18F)-2T3-275',
+                structure: '2T3',
+                buildingType: '板式',
+                buildingCombine: '105㎡+85㎡+95㎡',
+                location: '华东战区-宁波-奉化阳光海湾-1#2#楼',
+                rate: 82,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                thumbnail: 'HD-ZG(12-18F)-2T3-275-SL.png',
+                image: 'HD-ZG(12-18F)-2T3-275.png',
+                dir: '04.HD-ZG(12-18F)-2T3-275',
+                dwg: '04.HD-ZG(12-18F)-2T3-275.dwg',
+                pdf: '04.HD-ZG(12-18F)-2T3-275.pdf'
+            },
+            {
+                action: '',
+                id: '05',
+                modelCode: 'HD-ZG(12-18F)-2T4-370',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '105㎡+85㎡+95㎡',
+                location: '华东战区-宁波-奉化阳光海湾-1#2#楼',
+                rate: 90,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                image: 'HD-ZG(12-18F)-2T4-370.png',
+                dir: '05.HD-ZG(12-18F)-2T4-370',
+                dwg: '05.HD-ZG(12-18F)-2T4-370.dwg',
+                pdf: '05.HD-ZG(12-18F)-2T4-370.pdf'
+            },
+            {
+                action: '',
+                id: '06',
+                modelCode: 'HD-ZG(12-18F)-2T4-410',
+                structure: '2T4',
+                buildingType: '板式',
+                buildingCombine: '115㎡+90㎡+90㎡+115㎡',
+                location: '华东战区-宁波-奉化阳光海湾-36#66#楼',
+                rate: 90,
+                region: 'chinaEast',
+                productType: 'medianBuilding',
+                thumbnail: 'HD-ZG(12-18F)-2T4-410-SL.png',
+                image: 'HD-ZG(12-18F)-2T4-410.png',
+                dir: '06.HD-ZG(12-18F)-2T4-410',
+                dwg: '06.HD-ZG(12-18F)-2T4-410.dwg',
+                pdf: '06.HD-ZG(12-18F)-2T4-410.pdf'
+            },
+        ]
+    }
 
 ]
 
@@ -205,7 +312,13 @@ export default function ProductList() {
     const params = useParams()
     const [rows, setRows] = useState([])
     useEffect(() => {
-        setRows(testRows.find(q => q.productType === params.productType && q.region === params.regionCompanyID).results)
+        const currentRows = testRows.find(q => q.productType === params.productType &&
+            q.region === params.regionCompanyID)
+        if (currentRows) {
+            setRows(currentRows.results)
+        } else {
+            setRows([])
+        }
     }, [params.regionCompanyID, params.productType])
     return (<Box sx={{height: '70vh', width: '100%'}}>
         <ThemeProvider theme={theme}>

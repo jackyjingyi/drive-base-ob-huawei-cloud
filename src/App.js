@@ -119,25 +119,32 @@ function Home() {
                     height: '80vh', minHeight: '80vh', overflowY: 'scroll'
                 }}>
                     <Stack>
-                        <Box className={``}>
+                        <Box>
                             <Title>主数据检索</Title>
                         </Box>
                         <Box>
                             <Grid container direction={`column`}>
                                 {searchDataGrim.map((item, index) => {
-                                    return (<Grid item key={index}>
-                                        <Grid container sx={{display: 'flex'}}>
+                                    return (<Grid item key={index}
+                                            sx={{backgroundColor: '#E2E6EA'}}
+                                    >
+                                        <Grid container
+
+                                        >
                                             <Grid item xs={titleWidth} className={`infoType`}
-                                                  sx={{height: '100%', backgroundColor: '#E2E6EA'}}>
-                                                <Item>{item.title}</Item>
+                                                  sx={{height: '100%'}}>
+                                                <Typography variant={`h6`} align={`center`} noWrap={true}>{item.title}</Typography>
                                             </Grid>
-                                            <Grid item xs={defaultTotal - titleWidth}>
-                                                <Box sx={{display: 'inline-block'}}>
+                                            <Grid item xs={defaultTotal - titleWidth}
+                                                sx={{backgroundColor: '#fff',
+                                            }}
+                                            >
+                                                <Box sx={{display: 'inline-block', overflowX:'auto',overflowY:'auto'}}>
                                                     {item.tags.map((n, j) => {
 
                                                         if (n.link !== null) {
                                                             return (<Tag id={j} key={j}>
-                                                                <Button size={`small`} fullWidth
+                                                                <Button size={`small`}
                                                                         variant={`text`}
                                                                         color={`secondary`}
                                                                 >
