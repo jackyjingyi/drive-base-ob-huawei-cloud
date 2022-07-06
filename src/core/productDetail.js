@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import ButtonGroup from '@mui/material/ButtonGroup';
 import './productDetail.css'
 import Stack from "@mui/material/Stack";
-import {cdnBaseURL, thumbnailList, imageDIR, companyProductDir,bucketName} from "../config";
+import {cdnBaseURL, thumbnailList, imageDIR, companyProductDir, bucketName} from "../config";
 
 const match = {
     G: 'highBuilding',
@@ -23,10 +23,9 @@ export default function ProductDetail() {
     const params = useParams()
     const productID = params.productID
     const navigate = useNavigate()
-    const infoList = thumbnailList.find(q =>q.region=== params.regionCompanyID && q.productType=== params.productType)
+    const infoList = thumbnailList.find(q => q.region === params.regionCompanyID && q.productType === params.productType)
 
-    const info = infoList? infoList.results.find(q=>q.name===productID):[]
-
+    const info = infoList ? infoList.results.find(q => q.name === productID) : []
 
 
     function handleDownload(e) {
@@ -39,11 +38,17 @@ export default function ProductDetail() {
         }).then((res) => {
             console.log(res.InterfaceResult.Content.SignedUrl)
             window.open(res.InterfaceResult.Content.SignedUrl)
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err.response)
         })
 
         // window.open(signedUrl)
+    }
+
+    const warterMarkText = () => {
+        const date = new Date()
+        const text = btoa(`核心资产，严禁泄密 ${date.toLocaleString()}`).replace('+', '-').replace('/', '_')
+        return text
     }
 
     return (<Box sx={{padding: '1vmin'}}>
@@ -60,7 +65,6 @@ export default function ProductDetail() {
                     }}
                     data-target={`pdf`}
                     onClick={(e) => handleDownload(e)}
-
                 >PDF</Button>
                 <Button
                     sx={{
@@ -72,7 +76,8 @@ export default function ProductDetail() {
                 >CAD</Button>
             </ButtonGroup>
         </Stack>
-        <img className={`fullImage`} src={`${cdnBaseURL}${params.regionCompanyID}/${params.productType}/${imageDIR}${params.productID}.png`}/>
+        <img className={`fullImage`}
+             src={`${cdnBaseURL}${params.regionCompanyID}/${params.productType}/${imageDIR}${params.productID}.png`}/>
     </Box>)
 }
 

@@ -255,6 +255,46 @@ const testRows = [
                 pdf: '06.HD-ZG(12-18F)-2T4-410.pdf'
             },
         ]
+    },{
+        region: 'chinaNorth',
+        productType: 'highBuilding',
+        results: [
+            {
+                action: '',
+                id: '01',
+                modelCode: 'BF-G(19-33F)-2T2-350',
+                structure: '2T2',
+                buildingType: '板式',
+                buildingCombine: '95㎡+95㎡',
+                location: '北方战区-太原市-侨冠项目（二期）-8#楼',
+                rate: 85,
+                region: 'chinaNorth',
+                productType: 'highBuilding',
+                thumbnail: 'BF-G(19-33F)-2T2-350-SL.png',
+                image: 'BF-G(19-33F)-2T2-350.png',
+                dir: '01.BF-G(19-33F)-2T2-350',
+                dwg: '01.BF-G(19-33F)-2T2-350.dwg',
+                pdf: '02.BF-G(19-33F)-2T2-350.pdf',
+            },
+            {
+                action: '',
+                id: '01',
+                modelCode: 'BF-G(19-33F)-2T2-350',
+                structure: '2T2',
+                buildingType: '板式',
+                buildingCombine: '95㎡+95㎡',
+                location: '北方战区-太原市-侨冠项目（二期）-8#楼',
+                rate: 85,
+                region: 'chinaNorth',
+                productType: 'highBuilding',
+                thumbnail: 'BF-G(19-33F)-2T2-350-SL.png',
+                image: 'BF-G(19-33F)-2T2-350.png',
+                dir: '01.BF-G(19-33F)-2T2-350',
+                dwg: '01.BF-G(19-33F)-2T2-350.dwg',
+                pdf: '02.BF-G(19-33F)-2T2-350.pdf',
+            },
+
+        ]
     }
 
 ]
