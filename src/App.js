@@ -26,6 +26,20 @@ import ProductList from "./core/productList"
 import Thumbnail from "./core/thumbnail";
 import ProductDetail from "./core/productDetail";
 import Query from './features/query/Query'
+import cookie from "react-cookies";
+import jwt_decode from "jwt-decode"
+import {useDispatch, useSelector} from "react-redux";
+import {ListItem, ListItemIcon, ListItemText, MenuItem, MenuList, TextField} from "@mui/material";
+import {login, logout} from "./features/user/usersSlice";
+import conf from "./config.json"
+import {ContentCut} from "@mui/icons-material";
+import Divider from "@mui/material/Divider";
+import {nanoid} from "@reduxjs/toolkit";
+import TabPanel, {a11yProps} from "./features/tabs/Tabs";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import ResearchCenter from "./features/research/ResearchCenter";
+import PDFDisplay from "./features/management/PDFDisplay";
 
 const style = {
     position: 'absolute',
@@ -77,11 +91,70 @@ const total = 16
 const left = 3
 const mapWidth = 9
 const titleWidth = 4
+const config = conf
 
 function App() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const user = useSelector(state => state.user)
     // main entry
-    return (<div className={`App`}>
+    useEffect(() => {
+        let ignore = false
+        const timestamp = Date.parse(new Date()) / 1000
+        const refresh = cookie.load(`refresh`)
+        const uid = cookie.load('uid')
 
+        async function get_csrf() {
+            const csrf = await axios.get('/api/accounts/get_csrf_token')
+            if (!ignore) {
+                cookie.save('csrftoken', csrf.data.csrf_token, '/')
+            }
+        }
+
+        async function refresh_token(p) {
+            console.log(p)
+            const access = await axios.post(`/api/token/refresh/`, {
+                refresh: p
+            })
+            if (!ignore) {
+                cookie.save('access', access.data.access, '/')
+                const newInfo = jwt_decode(access.data.access)
+                dispatch(login({
+                    ...newInfo, isLogin: true
+                }))
+                cookie.save('uid', newInfo.uid, '/')  // 用户id
+                cookie.save('access', access.data.access, '/')
+                cookie.save('refresh', p, '/')
+            }
+        }
+
+        if (uid && refresh) {
+            // 有用户信息
+            const info = jwt_decode(refresh)
+            console.log(info, timestamp)
+            if (timestamp > info.exp) {
+                // 过期
+                console.log(timestamp, info)
+                navigate('/user/login')
+            } else {
+                // 未过期
+                // 直接refresh token
+                refresh_token(refresh)
+            }
+        } else {
+            // 无用户信息，pass
+            console.log("here")
+            if (config.debug) {
+                get_csrf()
+            }
+            navigate('/user/login')
+        }
+        return () => {
+            ignore = true;
+        };
+    }, [])
+
+    return (<div className={`App`}>
         <Routes>
             <Route path={`/`} element={<Home/>}>
                 <Route path={``} element={<MapsPanel/>}/>
@@ -95,45 +168,315 @@ function App() {
                     </Route>
                     <Route path={`:productID`} element={<ProductDetail/>}/>
                 </Route>
+                <Route path={`product/house`} element={<HouseHolder/>}>
+                    <Route path={''} element={<div>house center</div>}/>
+                </Route>
+                <Route path={`product/building`} element={<BuildingHolder/>}>
+                    <Route path={''} element={<BuildingCenter/>}>
+                        <Route path={`:regionID`} element={<BuildingList/>}/>
+                    </Route>
+                </Route>
+                <Route path={`product-management`} element={<div>产品库管理办法</div>}>
+                </Route>
+                <Route path={`product-research`} element={<ResearchCenter/>}>
+                </Route>
+            </Route>
+            <Route path={`/user`} element={<UserMain/>}>
+                <Route path={`login`} element={<Login/>}/>
+                <Route path={`logout`} element={<Logout/>}/>
+                <Route path={`sign-up`} element={<SignUp/>}/>
+                <Route path={`management`} element={<UserManager/>}>
+                    <Route path={`reset-passwd`} element={<PasswdReset/>}/>
+                </Route>
             </Route>
         </Routes>
     </div>)
 
 }
 
-function Home() {
-    const location = useLocation()
-    const [breadcrumbs, setBreadcrumbs] = useState([])
-    const bannerSX = {
-        width: "100%", height: "10vh"
+function UserMain() {
+    return (<>
+        'user'
+        <Box sx={{
+            height: '85vh', minHeight: '85vh'
+        }}>
+            <Outlet/>
+        </Box>
+
+    </>)
+}
+
+function Login() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const [values, setValues] = useState({
+        username: '', password: '',
+    })
+    const handleChange = (prop) => (event) => {
+        setValues({...values, [prop]: event.target.value});
+    };
+
+    function handleClick() {
+        if (values.username !== '' && values.password !== '') {
+            axios({
+                method: 'post', url: `/api/token/`, data: {
+                    username: values.username, password: values.password
+                }
+            }).then((res) => {
+                const info = jwt_decode(res.data.access)
+                dispatch(login({
+                    ...info, isLogin: true
+                }))
+                cookie.save('uid', info.uid, '/')
+                cookie.save('access', res.data.access, '/')
+                cookie.save('refresh', res.data.refresh, '/')
+                navigate('/')
+            }).catch((err) => {
+                // popup user login error
+                console.log(err)
+            })
+        }
     }
 
-    return (
-        <React.Fragment>
-            <Box sx={bannerSX}>
-                <Banner/>
-            </Box>
-            <div className={`container-fluid page`}>
-                <Grid container spacing={0}
+    return (<>
+        <Grid container
+              direction={`row`}
+              justifyContent={`center`}
+              alignItems={`stretch`}
+              sx={{
+                  height: '100%'
+              }}
+        >
+            <Grid item xs={2} md={6} lg={8}>
+
+            </Grid>
+            <Grid item xs={10} md={4} lg={3}>
+                <Grid container
                       direction={`column`}
-                      alignItems="stretch"
-                      justifyContent="flex-start"
+                      justifyContent={`center`}
+                      alignItems={`stretch`}
+                      sx={{
+                          height: '100%', padding: '30px', margin: '15px'
+                      }}
                 >
-                    <Grid item sx={{marginTop:'10px'}}>
-                        123tabs(产品库、房型楼型、等）
+                    <Grid item xs={4}>
+
                     </Grid>
-                    <Grid item sx={{marginBottom:'10px'}}>
-                        <Query/>
+                    <Grid item xs={6}>
+                        <Box>
+                            <Stack>
+                                <TextField id={`username`} label={`用户名`} variant={`standard`} margin={`normal`}
+                                           value={values.username}
+                                           onChange={handleChange(`username`)}
+                                />
+                                <TextField id={`password`} label={`密码`} variant={`standard`} margin={`normal`}
+                                           value={values.password} type={`password`}
+                                           onChange={handleChange(`password`)}
+                                />
+                                <Button onClick={handleClick}>
+                                    登录
+                                </Button>
+                            </Stack>
+                        </Box>
                     </Grid>
-                    <Grid item>
-                        <Outlet/>
+                    <Grid item xs={2}>
 
                     </Grid>
                 </Grid>
-            </div>
+
+            </Grid>
+            <Grid item xs md={2} lg>
+
+            </Grid>
+        </Grid>
+    </>)
+}
+
+function Logout() {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    useEffect(() => {
+        cookie.remove('uid', {domain: 'localhost'})
+        cookie.remove('access', {domain: 'localhost'})
+        cookie.remove('refresh', {domain: 'localhost'})
+        cookie.remove('csrftoken', {domain: 'localhost'})
+        dispatch(logout())
+        navigate('/')
+    }, [])
+    return ('logout')
+}
+
+function UserManager() {
+    return (<>
+            'user manager'
+            <NavLink to={'/user/management/reset-passwd'}>
+                更改密码
+            </NavLink>
+            <Outlet/>
+        </>
+
+    )
+}
+
+function PasswdReset() {
+    return ('change password')
+}
+
+function SignUp() {
+    return ('signup')
+}
+
+function Home() {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const user = useSelector(state => state.user)
+    const [tabIndex, setTabIndex] = useState(0)
+    const bannerSX = {
+        width: "100%", height: "10vh"
+    }
+    const topLinks = () => {
+        if (user.isLogin) {
+            return (<>
+                <NavLink to={'/user/management'}>
+                    <Typography variant={`body2`} component={`span`} children={'用户管理'}/>
+                </NavLink>
+                <NavLink to={'/user/logout'}>
+                    <Typography variant={`body2`} component={`span`} children={'登出'}/>
+                </NavLink>
+                <NavLink to={'/'}>
+                    <Typography variant={`body2`} component={`span`} children={'首页'}
+                    />
+                </NavLink>
+            </>)
+        } else {
+            return (<>
+                <NavLink to={'/user/sign-up'}>
+                    <Typography variant={`body2`} component={`span`} children={'注册'}
+                                style={{visibility: user.isLogin ? 'hidden' : 'visible'}}
+                    />
+                </NavLink>
+
+                <NavLink to={'/user/login'}>
+                    <Typography variant={`body2`} component={`span`} children={'登录'}
+                                style={{visibility: user.isLogin ? 'hidden' : 'visible'}}/>
+                </NavLink>
+                <NavLink to={'/'}>
+                    <Typography variant={`body2`} component={`span`} children={'首页'}
+                    />
+                </NavLink>
+            </>)
+        }
+    }
+
+    const handleChange = (event, newValue) => {
+        setTabIndex(newValue);
+    };
+
+
+    return (<React.Fragment>
+            <Grid container direction={`column`}
+                  columns={2}
+                  alignItems="stretch"
+                  sx={{height: '100%', width: '100%', padding: 0}}>
+                <Grid item sx={{backgroundColor: '#e3e4e5', borderBottom: 'solid 1px #ddd', height: '2vh'}}>
+                    <Stack
+                        direction="row-reverse"
+                        justifyContent="flex-start"
+                        alignItems="center"
+                        spacing={1}
+                        sx={{
+                            paddingInlineEnd: '20px'
+                        }}
+                    >
+                        {topLinks()}
+                    </Stack>
+                </Grid>
+            </Grid>
+            <Box sx={bannerSX}>
+                <Banner/>
+            </Box>
+
+            <Box sx={{width: '100%',backgroundColor:'#f6f8fa'}}>
+                <Box sx={{borderBottom: 1, borderColor: 'divider'}}>
+                    <Tabs value={tabIndex} onChange={handleChange} aria-label="basic tabs example">
+                        <Tab label="首页" {...a11yProps(0)} />
+                        <Tab label="产品库V1.0管理办法" {...a11yProps(1)} />
+                        <Tab label="产品库V1.0强排可研模板" {...a11yProps(2)} />
+                        <Tab label="产品库V1.0楼型库" {...a11yProps(3)} />
+                        <Tab label="产品库V1.0户型库" {...a11yProps(4)} />
+                    </Tabs>
+                </Box>
+                <TabPanel value={tabIndex} index={0}>
+                    <MapsHolder/>
+                </TabPanel>
+                <TabPanel value={tabIndex} index={1}>
+                    <ManageHolder/>
+                </TabPanel>
+                <TabPanel value={tabIndex} index={2}>
+                    <ResearchHolder/>
+                </TabPanel>
+                <TabPanel value={tabIndex} index={3}>
+                    <BuildingHolder/>
+                </TabPanel>
+                <TabPanel value={tabIndex} index={4}>
+                    <HouseHolder/>
+                </TabPanel>
+            </Box>
+
         </React.Fragment>
 
     )
+}
+
+
+function ManageHolder(){
+    const navigate = useNavigate()
+    useEffect(() => {
+        navigate('/product-management')
+    }, [])
+    return (
+        <>
+         <PDFDisplay fileID={"G2WKB-ZuIc"}/>
+
+        </>
+    )
+}
+
+
+function ResearchHolder(){
+
+    const navigate = useNavigate()
+    const user = useSelector(state=>state.user)
+
+    useEffect(() => {
+        navigate('/product-research')
+    }, [])
+    return (
+        <Grid container
+              direction={`column`}
+              justifyContent={`center`}
+              alignItems={`stretch`}
+              className={`survey-main-panel`}
+        >
+
+            <Grid item xs={12} sx={{
+                minHeight: '80vh',
+                paddingTop: '16px'
+            }}>
+                <Outlet/>
+            </Grid>
+        </Grid>
+
+    )
+}
+
+
+function MapsHolder() {
+    const navigate = useNavigate()
+    useEffect(() => {
+        navigate('')
+    }, [])
+    return (<Outlet/>)
 }
 
 function MapsPanel() {
@@ -165,6 +508,110 @@ function MapsPanel() {
             </Box>
         </Grid>
     </Grid>)
+}
+
+function BuildingHolder() {
+    const navigate = useNavigate()
+    useEffect(() => {
+        navigate('/product/building')
+    }, [])
+
+    return (
+        <Outlet/>
+    )
+}
+
+
+function BuildingCenter() {
+    function getLeftList() {
+        const listData = {
+            region: [
+                {id: 0, label: '华东战区', value: 'chinaEast'},
+                {id: 1, label: '西部战区', value: 'chinaWest'},
+                {id: 2, label: '中部战区', value: 'chinaMiddle'},
+                {id: 3, label: '北方战区', value: 'chinaNorth'},
+                {id: 4, label: '华南战区', value: 'chinaSouth'},
+            ]
+        }
+        return (
+            Object.keys(listData).map((item, index) => {
+
+                return <React.Fragment key={nanoid()}><MenuList key={`item-${index}`}>{listData[item].map((i, d) => {
+                    return (
+                        <MenuItem key={i.id}>
+                            <ListItemText key={i.id}>
+                                <NavLink to={i.value}>
+                                    {i.label}
+                                </NavLink>
+                            </ListItemText>
+                        </MenuItem>
+                    )
+                })}</MenuList><Divider/></React.Fragment>
+            })
+        )
+    }
+
+    return (<Grid container
+                  columns={36}
+                  direction={`row`}
+                  alignItems={`stretch`}
+                  justifyContent={`flex-start`}
+        >
+            <Grid item xs={4}
+                  sx={{border: '1px solid'}}
+            >
+                <Paper>
+                    {getLeftList()}
+                </Paper>
+            </Grid>
+            <Grid item xs={32}
+                  sx={{border: '1px solid'}}
+            >
+                <Grid container spacing={0}
+                      direction={`column`}
+                      alignItems="stretch"
+                      justifyContent="flex-start"
+                >
+                    <Grid item>
+                        <Outlet/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    )
+}
+
+function BuildingList() {
+    const params = useParams()
+    const user = useSelector(state=>state.user)
+
+    // 1. 获取project list || creator == user.id
+
+
+    useEffect(()=>{
+        async function fetchBuilding(p) {
+            const buildingList = axios({
+
+            })
+        }
+
+    })
+
+    return (
+        params.regionID
+
+    )
+}
+
+function HouseHolder() {
+    const navigate = useNavigate()
+    useEffect(() => {
+        navigate('/product/house')
+    }, [])
+
+    return (<>
+        <Outlet/>
+    </>)
 }
 
 function FileSys(props) {
@@ -466,13 +913,7 @@ function FileSys(props) {
                         >
                             <RepoContext.Provider
                                 value={{
-                                    prefix,
-                                    productTypes,
-                                    productTab,
-                                    setProductTab,
-                                    formatTab,
-                                    setFormatTab,
-                                    obsClient
+                                    prefix, productTypes, productTab, setProductTab, formatTab, setFormatTab, obsClient
                                 }}>
                                 <Outlet/>
                             </RepoContext.Provider>

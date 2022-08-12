@@ -21,6 +21,7 @@ import DirectionsIcon from '@mui/icons-material/Directions';
 import Button from "@mui/material/Button";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import {NavLink} from "react-router-dom";
 
 const theme = createTheme({
     typography: {
@@ -33,7 +34,7 @@ const logo = () => {
         <IconContext.Provider value={{size: '4.2em', color: 'dark'}}>
             <div>
                 <GoCloudUpload/>&nbsp;&nbsp;
-                <span className={`text-bold text-dark`}>企业云盘</span>
+                <span className={`text-bold text-dark`}>地产知识库V1.0</span>
             </div>
         </IconContext.Provider>)
 }
@@ -49,7 +50,7 @@ const MainSearchForm = () => {
             width: '40%',
             border: '#01A439 1px solid',
             borderRadius: '0',
-            marginLeft:'10%',
+            marginLeft: '10%',
         }}
     >
         <InputBase
@@ -60,15 +61,16 @@ const MainSearchForm = () => {
         <Divider sx={{height: 28, m: 0.5}} orientation="vertical"/>
 
         <Button color={`success`}
-                sx={{backgroundColor: '#01A439',
+                sx={{
+                    backgroundColor: '#01A439',
                     borderRadius: '0',
-                    fontSize:'16px'}}
+                    fontSize: '16px'
+                }}
                 aria-label="directions" variant={`contained`}>
             搜索
         </Button>
     </Paper>)
 }
-
 
 
 const Banner = () => {
@@ -78,16 +80,6 @@ const Banner = () => {
               columns={2}
               alignItems="stretch"
               sx={{height: '100%', width: '100%', padding: 0}}>
-            <Grid item sx={{backgroundColor: '#e3e4e5', borderBottom: 'solid 1px #ddd', height: '2vh'}}>
-                <Stack
-                    direction="row-reverse"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                    spacing={2}
-                >
-                    <Typography variant={`body2`} component={`a`} children={isLogin ? '欢迎' : '请登录'}/>
-                </Stack>
-            </Grid>
             <Grid item sx={{height: '8vh'}}>
                 <Grid container direction={`row`} justifyContent="flex-end" sx={{height: '100%'}}
                       alignItems="center">

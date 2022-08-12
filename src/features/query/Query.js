@@ -103,7 +103,7 @@ export default function Query() {
         <FilterTag key={nanoid()} tagKey={tag.tagKey} tagVal={tag.tagVal}/>))
     const queries = useSelector(state => state.query)
     // frame
-    const renderChoices = queries.categories.map(query => (<ChoiceContainer queryID={query.id}/>))
+    const renderChoices = queries.categories.map(query => (<ChoiceContainer key={query.id} queryID={query.id}/>))
 
 
     return (<React.Fragment>

@@ -15,6 +15,7 @@ export const productType = {
     lowBuilding: '03.小高层7-11F',
 }
 
+
 // 组合路径, TODO: DELETE AFTER CHANGE
 const RegionDict = {
     chinaEast: `${mainFolder.productDB}/${companyID.chinaEast}/`,
@@ -35,8 +36,10 @@ export function companyProductDir(company, type = null) {
 }
 
 // 左侧的搜索栏目
-export const searchDataGrim = [{
-    index: 0, title: '所属战区', tags: [{
+export const searchDataGrim =
+    [
+    {
+        index: 0, title: '所属战区', tags: [{
         name: '华东战区', link: `/region-company/chinaEast`, // react router link
     }, {
         name: '西部战区', link: `/region-company/chinaWest`, // react router link
@@ -180,6 +183,4 @@ export const thumbnailList = [
     },
 
 ]
-
-
 export {RegionDict};

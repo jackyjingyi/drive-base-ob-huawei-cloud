@@ -1,0 +1,17 @@
+
+.research-card-context {
+    background-color: #fff;
+    border-radius: 5px;
+    width: 100%;
+    min-width: 300px;
+    max-width: 300px;
+    height: 190px;
+    margin: 0 10px 20px 10px;
+    cursor: pointer;
+}
+
+.item-center {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
